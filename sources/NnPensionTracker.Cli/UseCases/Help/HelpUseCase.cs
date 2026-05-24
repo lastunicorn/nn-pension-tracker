@@ -9,7 +9,7 @@ public class HelpUseCase : IUseCase
 		Display([
 			new HelpItem
 			{
-				Command = "account",
+				Command = "account [show]",
 				Description = "Displays the contributions from the current account."
 			},
 			new HelpItem
@@ -35,7 +35,7 @@ public class HelpUseCase : IUseCase
 			},
 			new HelpItem
 			{
-				Command = "fund",
+				Command = "fund [show]",
 				Description = "Displays the fund values from the database."
 			},
 			new HelpItem
