@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NnPensionTracker.Cli.Tests\NnPensionTracker.Cli.Tests.csproj" />
+  <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />
+</Solution>

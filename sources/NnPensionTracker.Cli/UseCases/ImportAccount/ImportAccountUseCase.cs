@@ -1,0 +1,130 @@
+using DustInTheWind.ConsoleTools.Controls;
+using DustInTheWind.ConsoleTools.Controls.Tables;
+using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
+using DustInTheWind.NN.Toolkit.MandatoryPrivatePension.Pdf;
+using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+
+namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportAccount;
+
+internal class ImportAccountUseCase : IUseCase
+{
+    private readonly IUnitOfWork unitOfWork;
+
+    public string FilePath { get; init; }
+
+    public ImportAccountUseCase(IUnitOfWork unitOfWork)
+    {
+        this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+    }
+
+    public async Task Execute()
+    {
+        if (FilePath == null)
+            throw new ArgumentNullException(nameof(FilePath));
+
+        DocumentLoadResult documentLoadResult = ParseDocument(FilePath);
+        DisplayParsingDiagnostics(documentLoadResult.Diagnostics);
+
+        ImportDiagnostics importDiagnostics = Import(documentLoadResult.Document);
+        DisplayImportDiagnostics(importDiagnostics);
+
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    private DocumentLoadResult ParseDocument(string filePath)
+    {
+        Console.WriteLine($"Parsing document '{filePath}'");
+        return ContributionsDocument.LoadFromFile(filePath);
+    }
+
+    private static void DisplayParsingDiagnostics(DocumentParsingDiagnostics diagnostics)
+    {
+        DataGrid diagnosticsGrid = new()
+        {
+            Margin = new Thickness(0, 1, 0, 1)
+        };
+
+        diagnosticsGrid.Columns.Add($"Pages ({diagnostics.Pages.Count})");
+        diagnosticsGrid.Columns.Add("Extraction Algorithm");
+        diagnosticsGrid.Columns.Add("Table Count", HorizontalAlignment.Right);
+        diagnosticsGrid.Columns.Add("Row Count", HorizontalAlignment.Right);
+
+        foreach (PageParsingDiagnostics page in diagnostics.Pages)
+        {
+            string pageNumber = $"Page {page.PageIndex}";
+            TableExtractionApproachPretty tableExtractionApproach = page.TableExtractionApproach;
+            int tableCount = page.Tables.Count;
+            int rowCount = page.Tables
+                .Select(x => x.RowCount)
+                .Sum();
+
+            diagnosticsGrid.Rows.Add(pageNumber, tableExtractionApproach, tableCount, rowCount);
+        }
+
+        int totalRowCount = diagnostics.Pages
+            .SelectMany(x => x.Tables)
+            .Select(x => x.RowCount)
+            .Sum();
+        diagnosticsGrid.Footer = "Row Count: " + totalRowCount;
+
+        diagnosticsGrid.Display();
+    }
+
+    private ImportDiagnostics Import(ContributionsDocument contributionsDocument)
+    {
+        Console.WriteLine($"Importing {contributionsDocument.Count} contributions into database.");
+
+        ImportDiagnostics importDiagnostics = new();
+
+        foreach (Contribution contribution in contributionsDocument)
+        {
+            Contribution existingContribution = unitOfWork.ContributionRepository.Get(contribution.Month);
+
+            if (existingContribution == null)
+            {
+                unitOfWork.ContributionRepository.Add(contribution);
+                importDiagnostics.AddCount++;
+            }
+            else
+            {
+                if (existingContribution.Equals(contribution))
+                {
+                    importDiagnostics.SkipCount++;
+                }
+                else
+                {
+                    existingContribution.GrossValue = contribution.GrossValue;
+                    existingContribution.AdministrationFee = contribution.AdministrationFee;
+                    existingContribution.NetValue = contribution.NetValue;
+                    existingContribution.UnitValue = contribution.UnitValue;
+                    existingContribution.UnitCount = contribution.UnitCount;
+                    existingContribution.PaidInMonth = contribution.PaidInMonth;
+
+                    importDiagnostics.UpdateCount++;
+                }
+            }
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Data imported successfully.");
+
+        return importDiagnostics;
+    }
+
+    private void DisplayImportDiagnostics(ImportDiagnostics importDiagnostics)
+    {
+        DataGrid diagnosticsGrid = new()
+        {
+            Margin = new Thickness(0, 1, 0, 1)
+        };
+
+        diagnosticsGrid.Columns.Add("Name", HorizontalAlignment.Left);
+        diagnosticsGrid.Columns.Add("Value", HorizontalAlignment.Right);
+
+        diagnosticsGrid.Rows.Add("Add", importDiagnostics.AddCount);
+        diagnosticsGrid.Rows.Add("Update", importDiagnostics.UpdateCount);
+        diagnosticsGrid.Rows.Add("Skip", importDiagnostics.SkipCount);
+
+        diagnosticsGrid.Display();
+    }
+}
