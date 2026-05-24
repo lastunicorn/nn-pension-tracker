@@ -50,9 +50,6 @@ internal class ImportFundFromWebUseCase : IUseCase
 
 		if (Year != null && (FromDate != null || ToDate != null))
 			throw new Exception("Please specify either 'year' or the 'from'/'to' interval, not both.");
-
-		if (Year == null && (FromDate == null || ToDate == null))
-			throw new Exception("When 'year' is not provided, both 'from' and 'to' dates are required.");
 	}
 
 	private async Task<IEnumerable<FundNav>> ReadFromNnApi()

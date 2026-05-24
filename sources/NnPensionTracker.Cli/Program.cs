@@ -31,17 +31,17 @@ namespace DustInTheWind.NnPensionTracker.Cli;
 
 internal static class Program
 {
-	internal static Task Main(string[] args)
+	internal static async Task Main(string[] args)
 	{
 		ApplyCultureFromAppSettings();
 
 		Arguments arguments = new(args);
-		using ServiceProvider serviceProvider = CreateServiceProvider();
+		await using ServiceProvider serviceProvider = CreateServiceProvider();
 
 		IUseCase useCase = CreateUseCase(arguments, serviceProvider)
 			?? serviceProvider.GetRequiredService<HelpUseCase>();
 		
-		return useCase.Execute();
+		await useCase.Execute();
 	}
 
 	private static void ApplyCultureFromAppSettings()
