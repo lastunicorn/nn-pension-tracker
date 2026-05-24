@@ -1,13 +1,13 @@
 using DustInTheWind.ConsoleTools;
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ClearFund;
 
 internal class ClearFundUseCase : IUseCase
 {
-	private readonly UnitOfWork unitOfWork;
+	private readonly IUnitOfWork unitOfWork;
 
-	public ClearFundUseCase(UnitOfWork unitOfWork)
+	public ClearFundUseCase(IUnitOfWork unitOfWork)
 	{
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}

@@ -1,6 +1,6 @@
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-internal class UnitOfWork: IUnitOfWork
+public class UnitOfWork: IUnitOfWork
 {
     private readonly Database database;
 

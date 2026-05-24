@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 internal static class ColumnNamesRepository
 {

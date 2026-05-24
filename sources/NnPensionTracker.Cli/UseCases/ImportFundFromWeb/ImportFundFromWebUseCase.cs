@@ -2,8 +2,8 @@ using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.ApiAccess;
-using DustInTheWind.NnPensionTracker.Cli.Domain;
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+using DustInTheWind.NnPensionTracker.Domain;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 

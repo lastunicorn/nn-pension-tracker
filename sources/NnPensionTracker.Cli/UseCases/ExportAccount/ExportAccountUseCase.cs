@@ -1,6 +1,6 @@
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
-using DustInTheWind.NnPensionTracker.Cli.Ports.FileSystemAccess;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using NnPensionTracker.Ports.FileSystemAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
 

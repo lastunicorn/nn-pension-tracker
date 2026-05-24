@@ -21,7 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Ports\NnAccess\"/>
+      <ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" />
+      <ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" />
+      <ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" />
     </ItemGroup>
 
 </Project>

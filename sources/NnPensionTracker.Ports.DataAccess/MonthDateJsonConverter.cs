@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class MonthDateJsonConverter : JsonConverter<MonthDate>
 {

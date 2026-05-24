@@ -1,5 +1,5 @@
 using CsvHelper.Configuration;
-using DustInTheWind.NnPensionTracker.Cli.Domain;
+using DustInTheWind.NnPensionTracker.Domain;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 

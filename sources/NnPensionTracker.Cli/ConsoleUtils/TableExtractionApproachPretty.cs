@@ -1,6 +1,6 @@
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension.Pdf;
 
-namespace DustInTheWind.NnPensionTracker.Cli;
+namespace DustInTheWind.NnPensionTracker.Cli.ConsoleUtils;
 
 internal readonly record struct TableExtractionApproachPretty
 {

@@ -1,7 +1,7 @@
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
-using DustInTheWind.NnPensionTracker.Cli.Domain;
+using DustInTheWind.NnPensionTracker.Domain;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class Database
 {

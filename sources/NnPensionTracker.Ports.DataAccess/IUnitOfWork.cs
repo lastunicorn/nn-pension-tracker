@@ -1,6 +1,6 @@
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-internal interface IUnitOfWork
+public interface IUnitOfWork
 {
     ContributionRepository ContributionRepository { get; }
 

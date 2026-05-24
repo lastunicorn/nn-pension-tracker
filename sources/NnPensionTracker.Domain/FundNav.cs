@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli.Domain;
+namespace DustInTheWind.NnPensionTracker.Domain;
 
 /// <summary>
 /// Fund Net Asset Value

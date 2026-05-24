@@ -1,6 +1,6 @@
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class ContributionRepository
 {

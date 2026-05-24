@@ -1,4 +1,12 @@
 <Solution>
+  <Folder Name="/Common/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Folder Name="/Ports/">
+    <Project Path="NnPensionTracker.Ports.DataAccess/NnPensionTracker.Ports.DataAccess.csproj" />
+    <Project Path="NnPensionTracker.Ports.FileSystemAccess/NnPensionTracker.Ports.FileSystemAccess.csproj" />
+  </Folder>
   <Project Path="NnPensionTracker.Cli.Tests\NnPensionTracker.Cli.Tests.csproj" />
   <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />
+  <Project Path="NnPensionTracker.Domain/NnPensionTracker.Domain.csproj" />
 </Solution>

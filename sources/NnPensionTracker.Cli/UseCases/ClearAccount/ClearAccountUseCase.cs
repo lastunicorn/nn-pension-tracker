@@ -1,4 +1,4 @@
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
 

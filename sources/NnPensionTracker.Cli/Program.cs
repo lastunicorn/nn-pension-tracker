@@ -1,7 +1,5 @@
 ﻿using DustInTheWind.ConsoleTools.Arguments;
 using DustInTheWind.NN.Toolkit.ApiAccess;
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
-using DustInTheWind.NnPensionTracker.Cli.Ports.FileSystemAccess;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearFund;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
@@ -12,6 +10,8 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using NnPensionTracker.Ports.FileSystemAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
 
@@ -210,7 +210,7 @@ internal static class Program
 				if (yearArgument == null)
 					throw new ArgumentException("Year argument is required when source is 'nn-api' or 'web'.", nameof(arguments));
 
-				int year = int.Parse(yearArgument.Value);
+				int year = int.Parse(yearArgument.Value!);
 
 				Database database = OpenDatabase();
 				UnitOfWork unitOfWork = new(database);
@@ -226,7 +226,7 @@ internal static class Program
 			Argument yearArgument = arguments["year"];
 
 			int? year = yearArgument != null
-				? int.Parse(yearArgument.Value)
+				? int.Parse(yearArgument.Value!)
 				: null;
 
 			if (yearArgument != null)
@@ -287,7 +287,7 @@ internal static class Program
 		return new ClearFundUseCase(unitOfWork);
 	}
 
-	private static ShowFundUseCase TryCreateShowFundUseCase(Arguments arguments)
+	private static IUseCase TryCreateShowFundUseCase(Arguments arguments)
 	{
 		Argument noun = arguments[0];
 

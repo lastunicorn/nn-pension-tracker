@@ -1,7 +1,7 @@
 using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
-using DustInTheWind.NnPensionTracker.Cli.Ports.DataAccess;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 
