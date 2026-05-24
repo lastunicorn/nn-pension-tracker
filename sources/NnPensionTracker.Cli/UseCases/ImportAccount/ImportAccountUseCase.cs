@@ -30,10 +30,16 @@ internal class ImportAccountUseCase : IUseCase
 		DocumentLoadResult documentLoadResult = ParseDocument(FilePath);
 		DisplayParsingDiagnostics(documentLoadResult.Diagnostics);
 
-		ImportDiagnostics importDiagnostics = Import(documentLoadResult.Document);
+		AddColumnNamesToStorage(documentLoadResult.Document.Header);
+		
+		ImportDiagnostics importDiagnostics = AddContributionsToStorage(documentLoadResult.Document);
 		DisplayImportDiagnostics(importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
+	}
+
+	private void AddColumnNamesToStorage(ContributionsHeader documentHeader)
+	{
 	}
 
 	private DocumentLoadResult ParseDocument(string filePath)
@@ -75,7 +81,7 @@ internal class ImportAccountUseCase : IUseCase
 		diagnosticsGrid.Display();
 	}
 
-	private ImportDiagnostics Import(ContributionsDocument contributionsDocument)
+	private ImportDiagnostics AddContributionsToStorage(ContributionsDocument contributionsDocument)
 	{
 		Console.WriteLine($"Importing {contributionsDocument.Count} contributions into database.");
 

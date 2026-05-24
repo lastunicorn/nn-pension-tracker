@@ -2,9 +2,9 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public interface IUnitOfWork
 {
-    ContributionRepository ContributionRepository { get; }
+    IContributionRepository ContributionRepository { get; }
 
-    FundNavRepository FundNavRepository { get; }
+    IFundNavRepository FundNavRepository { get; }
 
     Task SaveChangesAsync();
 }

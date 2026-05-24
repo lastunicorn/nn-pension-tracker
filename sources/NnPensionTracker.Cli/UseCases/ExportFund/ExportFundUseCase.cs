@@ -34,27 +34,21 @@ internal class ExportFundUseCase : IUseCase
 		if (FilePath == null)
 			throw new ArgumentNullException(nameof(FilePath));
 
-		IEnumerable<FundNav> fundNavs = RetrieveFundNavsFromStorage();
+		IAsyncEnumerable<FundNav> fundNavs = RetrieveFundNavsFromStorage();
 		await ExportFundNavsToCsv(fundNavs);
 
 		Console.WriteLine();
 		CustomConsole.WriteLineSuccess($"{count} fund NAV values were exported to: '{FilePath}'");
 	}
 
-	private IEnumerable<FundNav> RetrieveFundNavsFromStorage()
+	private IAsyncEnumerable<FundNav> RetrieveFundNavsFromStorage()
 	{
-		IEnumerable<FundNav> fundNavs = Year != null
+		return Year != null
 			? unitOfWork.FundNavRepository.GetByYear(Year.Value)
 			: unitOfWork.FundNavRepository.GetAll();
-
-		foreach (FundNav fundNav in fundNavs)
-		{
-			count++;
-			yield return fundNav;
-		}
 	}
 
-	private async Task ExportFundNavsToCsv(IEnumerable<FundNav> fundNavs)
+	private async Task ExportFundNavsToCsv(IAsyncEnumerable<FundNav> fundNavs)
 	{
 		await using StreamWriter writer = fileSystemService.OpenStreamWriter(FilePath);
 		await using CsvWriter csv = new(writer, CultureInfo.InvariantCulture);
@@ -62,6 +56,15 @@ internal class ExportFundUseCase : IUseCase
 		csv.Context.RegisterClassMap<FundNavMap>();
 		csv.Context.TypeConverterOptionsCache.GetOptions<DateOnly>().Formats = ["yyyy-MM-dd"];
 		csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = ["yyyy-MM-dd"];
-		await csv.WriteRecordsAsync(fundNavs);
+
+		csv.WriteHeader<FundNav>();
+		await csv.NextRecordAsync();
+
+		await foreach (FundNav fundNav in fundNavs)
+		{
+			count++;
+			csv.WriteRecord(fundNav);
+			await csv.NextRecordAsync();
+		}
 	}
 }

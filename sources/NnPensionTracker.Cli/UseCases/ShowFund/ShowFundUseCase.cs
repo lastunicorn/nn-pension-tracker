@@ -14,13 +14,17 @@ internal class ShowFundUseCase : IUseCase
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}
 
-	public Task Execute()
+	public async Task Execute()
 	{
-		IEnumerable<FundNav> fundRecords = unitOfWork.FundNavRepository.GetAll()
-			.OrderBy(x => x.Date);
-		DisplayFundRecords(fundRecords);
+		List<FundNav> fundRecords = [];
 
-		return Task.CompletedTask;
+		await foreach (FundNav fundRecord in unitOfWork.FundNavRepository.GetAll())
+			fundRecords.Add(fundRecord);
+
+		fundRecords = fundRecords
+			.OrderBy(x => x.Date)
+			.ToList();
+		DisplayFundRecords(fundRecords);
 	}
 
 	private void DisplayFundRecords(IEnumerable<FundNav> fundRecords)

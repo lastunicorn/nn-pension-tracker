@@ -14,15 +14,13 @@ internal class ShowAccountUseCase : IUseCase
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     
-    public Task Execute()
+    public async Task Execute()
     {
-        IEnumerable<Contribution> contributions = unitOfWork.ContributionRepository.GetAll();
-        DisplayContributions(contributions);
-        
-        return Task.CompletedTask;
+        IAsyncEnumerable<Contribution> contributions = unitOfWork.ContributionRepository.GetAll();
+        await DisplayContributions(contributions);
     }
 
-    private void DisplayContributions(IEnumerable<Contribution> contributions)
+    private async Task DisplayContributions(IAsyncEnumerable<Contribution> contributions)
     {
         DataGrid dataGrid = new();
 
@@ -34,7 +32,7 @@ internal class ShowAccountUseCase : IUseCase
         dataGrid.Columns.Add("Unit Count", HorizontalAlignment.Right);
         dataGrid.Columns.Add("Paid in Month", HorizontalAlignment.Center);
 
-        foreach (Contribution contribution in contributions)
+        await foreach (Contribution contribution in contributions)
         {
             dataGrid.Rows.Add(
                 contribution.Month,

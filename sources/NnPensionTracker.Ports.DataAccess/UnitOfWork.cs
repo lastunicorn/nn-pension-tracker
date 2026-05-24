@@ -4,9 +4,9 @@ public class UnitOfWork: IUnitOfWork
 {
     private readonly Database database;
 
-    public ContributionRepository ContributionRepository => field ??= new ContributionRepository(database);
+    public IContributionRepository ContributionRepository => field ??= new ContributionRepository(database);
 
-    public FundNavRepository FundNavRepository => field ??= new FundNavRepository(database);
+    public IFundNavRepository FundNavRepository => field ??= new FundNavRepository(database);
 
     public UnitOfWork(Database database)
     {

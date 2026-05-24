@@ -2,7 +2,7 @@ using DustInTheWind.NnPensionTracker.Domain;
 
 namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-public class FundNavRepository
+public class FundNavRepository : IFundNavRepository
 {
     private readonly Database database;
 
@@ -16,14 +16,25 @@ public class FundNavRepository
         return database.FundRecords.FirstOrDefault(x => x.Date == date);
     }
 
-    public IEnumerable<FundNav> GetAll()
+    public async IAsyncEnumerable<FundNav> GetAll()
     {
-        return database.FundRecords;
+        foreach (FundNav fundNav in database.FundRecords)
+        {
+            yield return fundNav;
+            await Task.Yield();
+        }
     }
 
-    public IEnumerable<FundNav> GetByYear(int year)
+    public async IAsyncEnumerable<FundNav> GetByYear(int year)
     {
-        return database.FundRecords.Where(x => x.Date.Year == year);
+        foreach (FundNav fundNav in database.FundRecords)
+        {
+            if (fundNav.Date.Year != year)
+                continue;
+
+            yield return fundNav;
+            await Task.Yield();
+        }
     }
 
     public void Add(FundNav fundNav)

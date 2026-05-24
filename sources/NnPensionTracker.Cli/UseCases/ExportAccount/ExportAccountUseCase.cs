@@ -31,7 +31,7 @@ internal class ExportAccountUseCase : IUseCase
         switch (exportFormatSafe.ToLower())
         {
             case "pp":
-                IEnumerable<Contribution> contributions = Year != null
+                IAsyncEnumerable<Contribution> contributions = Year != null
                     ? unitOfWork.ContributionRepository.GetByYear(Year.Value)
                     : unitOfWork.ContributionRepository.GetAll();
 
@@ -44,7 +44,7 @@ internal class ExportAccountUseCase : IUseCase
         }
     }
 
-    private async Task ExportToCsv(IEnumerable<Contribution> contributions)
+    private async Task ExportToCsv(IAsyncEnumerable<Contribution> contributions)
     {
         string[] labels =
         [
@@ -63,7 +63,7 @@ internal class ExportAccountUseCase : IUseCase
         await using NnTransactionsDocument nnTransactionsDocument = new(nnTransactionsStreamWriter, labels);
         await using NnCashTransactionsDocument nnCashTransactionsDocument = new(nnCashTransactionsStreamWriter);
 
-        foreach (Contribution contribution in contributions)
+        await foreach (Contribution contribution in contributions)
         {
             await nnTransactionsDocument.WriteAsync(contribution);
             await nnCashTransactionsDocument.WriteAsync(contribution);

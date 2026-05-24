@@ -2,7 +2,7 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 
 namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-public class ContributionRepository
+public class ContributionRepository : IContributionRepository
 {
     private readonly Database database;
 
@@ -11,14 +11,25 @@ public class ContributionRepository
         this.database = database ?? throw new ArgumentNullException(nameof(database));
     }
 
-    public IEnumerable<Contribution> GetAll()
+    public async IAsyncEnumerable<Contribution> GetAll()
     {
-        return database.Contributions;
+        foreach (Contribution contribution in database.Contributions)
+        {
+            yield return contribution;
+            await Task.Yield();
+        }
     }
 
-    public IEnumerable<Contribution> GetByYear(int year)
+    public async IAsyncEnumerable<Contribution> GetByYear(int year)
     {
-        return database.Contributions.Where(x => x.Month.Year == year);
+        foreach (Contribution contribution in database.Contributions)
+        {
+            if (contribution.Month.Year != year)
+                continue;
+
+            yield return contribution;
+            await Task.Yield();
+        }
     }
 
     public Contribution Get(MonthDate contributionMonth)
