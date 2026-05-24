@@ -66,8 +66,8 @@ public class HelpUseCase : IUseCase
 			},
 			new HelpItem
 			{
-				Command = "fund export --file <file-path>",
-				Description = "Exports the fund values into a CSV file."
+				Command = "fund export --file <file-path> [--year <year>]",
+				Description = "Exports the fund values into a CSV file. If --year is specified, only values from that year are exported."
 			},
 			new HelpItem
 			{

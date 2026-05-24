@@ -258,12 +258,18 @@ internal static class Program
 		if (fileArgument == null)
 			return null;
 
+		Argument yearArgument = arguments["year"];
+		int? year = yearArgument != null
+			? int.Parse(yearArgument.Value!)
+			: null;
+
 		Database database = OpenDatabase();
 		UnitOfWork unitOfWork = new(database);
 		FileSystemService fileSystemService = new();
 		return new ExportFundUseCase(unitOfWork, fileSystemService)
 		{
-			FilePath = fileArgument.Value
+			FilePath = fileArgument.Value,
+			Year = year
 		};
 	}
 

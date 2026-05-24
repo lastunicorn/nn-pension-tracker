@@ -21,6 +21,11 @@ public class FundNavRepository
         return database.FundRecords;
     }
 
+    public IEnumerable<FundNav> GetByYear(int year)
+    {
+        return database.FundRecords.Where(x => x.Date.Year == year);
+    }
+
     public void Add(FundNav fundNav)
     {
         if (fundNav == null) throw new ArgumentNullException(nameof(fundNav));
@@ -33,5 +38,3 @@ public class FundNavRepository
         database.FundRecords.Clear();
     }
 }
-
-
