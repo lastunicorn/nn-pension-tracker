@@ -1,0 +1,28 @@
+name: Build on master
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ./sources/NnPensionTracker.slnx --configfile ./nuget.config
+
+      - name: Build
+        run: dotnet build ./sources/NnPensionTracker.slnx -c Release --no-restore
