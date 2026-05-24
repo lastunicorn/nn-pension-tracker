@@ -11,6 +11,8 @@ internal class ExportAccountUseCase : IUseCase
 
     public string ExportFormat { get; init; }
 
+    public int? Year { get; init; }
+
     public ExportAccountUseCase(IUnitOfWork unitOfWork , IFileSystemService fileSystemService)
     {
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -24,7 +26,10 @@ internal class ExportAccountUseCase : IUseCase
         switch (exportFormatSafe.ToLower())
         {
             case "pp":
-                IEnumerable<Contribution> contributions = unitOfWork.ContributionRepository.GetAll();
+                IEnumerable<Contribution> contributions = Year != null
+                    ? unitOfWork.ContributionRepository.GetByYear(Year.Value)
+                    : unitOfWork.ContributionRepository.GetAll();
+
                 await ExportToCsv(contributions);
                 break;
 
@@ -47,8 +52,8 @@ internal class ExportAccountUseCase : IUseCase
             "Plătită în luna"
         ];
         
-        StreamWriter nnTransactionsStreamWriter = fileSystemService.OpenStreamWriter("NN_transactions.csv");
-        StreamWriter nnCashTransactionsStreamWriter =  fileSystemService.OpenStreamWriter("NN_cash_transactions.csv");
+        StreamWriter nnTransactionsStreamWriter = fileSystemService.OpenStreamWriter("nn_transactions.csv");
+        StreamWriter nnCashTransactionsStreamWriter =  fileSystemService.OpenStreamWriter("nn_cash_transactions.csv");
         
         await using NnTransactionsDocument nnTransactionsDocument = new(nnTransactionsStreamWriter, labels);
         await using NnCashTransactionsDocument nnCashTransactionsDocument = new(nnCashTransactionsStreamWriter);
@@ -61,7 +66,7 @@ internal class ExportAccountUseCase : IUseCase
 
         Console.WriteLine();
         Console.WriteLine("Account contributions were exported to CSV files:");
-        Console.WriteLine("  - NN_transactions.csv");
-        Console.WriteLine("  - NN_cash_transactions.csv");
+        Console.WriteLine("  - nn_transactions.csv");
+        Console.WriteLine("  - nn_cash_transactions.csv");
     }
 }

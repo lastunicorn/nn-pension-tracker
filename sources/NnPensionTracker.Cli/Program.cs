@@ -99,13 +99,18 @@ internal static class Program
 			return null;
 
 		Argument formatArgument = arguments["format"];
+		Argument yearArgument = arguments["year"];
+		int? year = yearArgument != null
+			? int.Parse(yearArgument.Value!)
+			: null;
 
 		Database database = OpenDatabase();
 		UnitOfWork unitOfWork = new(database);
 		FileSystemService fileSystemService = new();
 		return new ExportAccountUseCase(unitOfWork, fileSystemService)
 		{
-			ExportFormat = formatArgument?.Value
+			ExportFormat = formatArgument?.Value,
+			Year = year
 		};
 	}
 

@@ -19,12 +19,13 @@ public class HelpUseCase : IUseCase
 			},
 			new HelpItem
 			{
-				Command = "account export [--format <format-name>]",
+				Command = "account export [--format <format-name>] [--year <year>]",
 				Description =
 				[
 					"Exports the contribution records from the database to a file in the specified format.",
 					"Supported formats are: 'pp' (CSV files for PortfolioPerformance)",
-					"Format default value is 'pp'."
+					"Format default value is 'pp'.",
+					"If --year is specified, only contributions from that year are exported."
 				]
 			},
 			new HelpItem

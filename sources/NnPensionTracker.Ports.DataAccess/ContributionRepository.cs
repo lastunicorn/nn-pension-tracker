@@ -16,6 +16,11 @@ public class ContributionRepository
         return database.Contributions;
     }
 
+    public IEnumerable<Contribution> GetByYear(int year)
+    {
+        return database.Contributions.Where(x => x.Month.Year == year);
+    }
+
     public Contribution Get(MonthDate contributionMonth)
     {
         return database.Contributions.FirstOrDefault(x => x.Month == contributionMonth);
