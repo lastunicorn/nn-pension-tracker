@@ -13,7 +13,7 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 using System.Globalization;
-using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
 
@@ -329,10 +329,14 @@ internal static class Program
 			return false;
 		}
 
-		using FileStream stream = File.OpenRead(filePath);
-		using JsonDocument document = JsonDocument.Parse(stream);
+		IConfigurationRoot configuration = new ConfigurationBuilder()
+			.SetBasePath(Path.GetDirectoryName(filePath) ?? AppContext.BaseDirectory)
+			.AddJsonFile(Path.GetFileName(filePath), optional: false, reloadOnChange: false)
+			.Build();
 
-		if (TryReadCultureName(document.RootElement, out string cultureName))
+		string cultureName = configuration["CultureInfo"];
+		
+		if (!string.IsNullOrWhiteSpace(cultureName))
 		{
 			cultureInfo = CultureInfo.GetCultureInfo(cultureName);
 			return true;
@@ -352,18 +356,6 @@ internal static class Program
 		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 	}
 
-	private static bool TryReadCultureName(JsonElement rootElement, out string cultureName)
-	{
-		if (rootElement.TryGetProperty("CultureInfo", out JsonElement cultureInfoElement))
-		{
-			cultureName = cultureInfoElement.GetString() ?? string.Empty;
-			if (!string.IsNullOrWhiteSpace(cultureName))
-				return true;
-		}
-
-		cultureName = string.Empty;
-		return false;
-	}
 
 	private static Database OpenDatabase()
 	{
