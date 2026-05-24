@@ -33,6 +33,8 @@ internal static class Program
 {
 	internal static Task Main(string[] args)
 	{
+		// todo: Read culture info from appsettings.json file.
+
 		Arguments arguments = new(args);
 
 		IUseCase useCase = CreateUseCase(arguments) ?? new HelpUseCase();
@@ -98,7 +100,7 @@ internal static class Program
 
 		Database database = OpenDatabase();
 		UnitOfWork unitOfWork = new(database);
-		FileSystemService  fileSystemService = new();
+		FileSystemService fileSystemService = new();
 		return new ExportAccountUseCase(unitOfWork, fileSystemService)
 		{
 			ExportFormat = formatArgument?.Value
@@ -153,35 +155,26 @@ internal static class Program
 
 		Argument sourceArgument = arguments["source"];
 
-		if (sourceArgument != null)
-		{
-			if (sourceArgument.Value == "file")
-			{
-				Argument fileArgument = arguments["file"];
+		// if --source argument is provided and is 'file'
+		// OR
+		// if --source argument is not provided and --file argument is provided
 
-				Database database = OpenDatabase();
-				UnitOfWork unitOfWork = new(database);
-				FileSystemService fileSystemService = new();
-				return new ImportFundFromFileUseCase(unitOfWork, fileSystemService)
-				{
-					FilePath = fileArgument?.Value
-				};
-			}
-		}
-		else
+		bool isMatch = sourceArgument != null && sourceArgument.Value == "file";
+
+		if (!isMatch)
+			isMatch = sourceArgument == null && arguments["file"] != null;
+
+		if (isMatch)
 		{
 			Argument fileArgument = arguments["file"];
 
-			if (fileArgument != null)
+			Database database = OpenDatabase();
+			UnitOfWork unitOfWork = new(database);
+			FileSystemService fileSystemService = new();
+			return new ImportFundFromFileUseCase(unitOfWork, fileSystemService)
 			{
-				Database database = OpenDatabase();
-				UnitOfWork unitOfWork = new(database);
-				FileSystemService fileSystemService = new();
-				return new ImportFundFromFileUseCase(unitOfWork, fileSystemService)
-				{
-					FilePath = fileArgument.Value
-				};
-			}
+				FilePath = fileArgument?.Value
+			};
 		}
 
 		return null;
@@ -201,44 +194,42 @@ internal static class Program
 
 		Argument sourceArgument = arguments["source"];
 
-		if (sourceArgument != null)
-		{
-			if (sourceArgument.Value == "nn-api" || sourceArgument.Value == "web")
-			{
-				Argument yearArgument = arguments["year"];
+		// if --source argument is provided and is 'nn-api' or 'web'
+		// OR
+		// if --source argument is not provided and --year argument is provided
 
-				if (yearArgument == null)
-					throw new ArgumentException("Year argument is required when source is 'nn-api' or 'web'.", nameof(arguments));
+		bool isMatch = sourceArgument != null && (sourceArgument.Value == "nn-api" || sourceArgument.Value == "web");
 
-				int year = int.Parse(yearArgument.Value!);
+		if (!isMatch)
+			isMatch = sourceArgument == null && (arguments["year"] != null || arguments["from"] != null || arguments["to"] != null);
 
-				Database database = OpenDatabase();
-				UnitOfWork unitOfWork = new(database);
-				NnApiClient nnApiClient = new();
-				return new ImportFundFromWebUseCase(unitOfWork, nnApiClient)
-				{
-					Year = year
-				};
-			}
-		}
-		else
+		if (isMatch)
 		{
 			Argument yearArgument = arguments["year"];
+			Argument fromArgument = arguments["from"];
+			Argument toArgument = arguments["to"];
 
 			int? year = yearArgument != null
 				? int.Parse(yearArgument.Value!)
 				: null;
 
-			if (yearArgument != null)
+			DateOnly? fromDate = fromArgument != null
+				? DateOnly.Parse(fromArgument.Value!)
+				: null;
+
+			DateOnly? toDate = toArgument != null
+				? DateOnly.Parse(toArgument.Value!)
+				: null;
+
+			Database database = OpenDatabase();
+			UnitOfWork unitOfWork = new(database);
+			NnApiClient nnApiClient = new();
+			return new ImportFundFromWebUseCase(unitOfWork, nnApiClient)
 			{
-				Database database = OpenDatabase();
-				UnitOfWork unitOfWork = new(database);
-				NnApiClient nnApiClient = new();
-				return new ImportFundFromWebUseCase(unitOfWork, nnApiClient)
-				{
-					Year = year
-				};
-			}
+				Year = year,
+				FromDate = fromDate,
+				ToDate = toDate
+			};
 		}
 
 		return null;

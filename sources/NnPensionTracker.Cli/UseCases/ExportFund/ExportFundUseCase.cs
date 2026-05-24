@@ -33,6 +33,7 @@ internal class ExportFundUseCase : IUseCase
 
         csv.Context.RegisterClassMap<FundNavMap>();
         csv.Context.TypeConverterOptionsCache.GetOptions<DateOnly>().Formats = ["yyyy-MM-dd"];
+        csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = ["yyyy-MM-dd"];
         await csv.WriteRecordsAsync(fundNavs);
 
         Console.WriteLine();

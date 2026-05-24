@@ -4,66 +4,102 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.Help;
 
 public class HelpUseCase : IUseCase
 {
-    public Task Execute()
-    {
-        XConsole.Create()
-            .WriteLine("Usage:")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("account")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Displays the contributions from the current account.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("account import [--file <pdf-file-path>]")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Imports the contribution records from an NN contribution statement PDF file.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("account export [--format <format-name>]")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Exports the contribution records from the database to a file in the specified format.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("account clear")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Clears all contribution records from the database.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Displays the fund values from the database.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund import --from <date> --to <date>")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Imports the fund values for the specified date range from NN's website.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund import --year <year>")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Imports the fund values for the specified year from NN's website.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund import --file <file-path>")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Imports the fund values from a CSV file. The file must have the same format as the historical fund values CSV file that can be downloaded from NN's website.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund export --file <file-path>")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Exports the fund values into a CSV file.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("fund clear")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Clears all fund values from the database.")
-            .WriteLine()
-            .With(null, null)
-            .WriteLine("help")
-            .With(ConsoleColor.DarkGray, null)
-            .WriteLine("  Displays this help message.");
-        
-        return Task.CompletedTask;
-    }
+	public Task Execute()
+	{
+		Display([
+			new HelpItem
+			{
+				Command = "account",
+				Description = "Displays the contributions from the current account."
+			},
+			new HelpItem
+			{
+				Command = "account import --file <pdf-file-path>",
+				Description = "Imports the contribution records from an NN contribution statement PDF file."
+			},
+			new HelpItem
+			{
+				Command = "account export [--format <format-name>]",
+				Description =
+				[
+					"Exports the contribution records from the database to a file in the specified format.",
+					"Supported formats are: 'pp' (CSV files for PortfolioPerformance)",
+					"Format default value is 'pp'."
+				]
+			},
+			new HelpItem
+			{
+				Command = "account clear",
+				Description = "Clears all contribution records from the database."
+			},
+			new HelpItem
+			{
+				Command = "fund",
+				Description = "Displays the fund values from the database."
+			},
+			new HelpItem
+			{
+				Command = "fund import [--source web] --from <date> --to <date>",
+				Description =
+				[
+					"Imports the fund values for the specified date range from NN's website.",
+					"The --source option can be used to specify the source of the fund values. When --from and --to are specified, the source is automatically set to 'web'."
+				]
+			},
+			new HelpItem
+			{
+				Command = "fund import [--source web] --year <year>",
+				Description =
+				[
+					"Imports the fund values for the specified year from NN's website.",
+					"The --source option can be used to specify the source of the fund values. When --year is specified, the source is automatically set to 'web'."
+				]
+			},
+			new HelpItem
+			{
+				Command = "fund import [--source file] --file <file-path>",
+				Description =
+				[
+					"Imports the fund values from a CSV file. The file must have the same format as the historical fund values CSV file that can be downloaded from NN's website.",
+					"The --source option can be used to specify the source of the fund values. When --file is specified, the source is automatically set to 'file'."
+				]
+			},
+			new HelpItem
+			{
+				Command = "fund export --file <file-path>",
+				Description = "Exports the fund values into a CSV file."
+			},
+			new HelpItem
+			{
+				Command = "fund clear",
+				Description = "Clears all fund values from the database."
+			},
+			new HelpItem
+			{
+				Command = "help",
+				Description = "Displays this help message."
+			}
+		]);
+
+		return Task.CompletedTask;
+	}
+
+	private static void Display(List<HelpItem> helpItems)
+	{
+		XConsole xConsole = XConsole.Create()
+			.WriteLine("Usage:");
+
+		foreach (HelpItem helpItem in helpItems)
+		{
+			xConsole
+				.WriteLine()
+				.With(null, null)
+				.WriteLine(helpItem.Command)
+				.With(ConsoleColor.DarkGray, null);
+
+			if (helpItem.Description != null)
+				foreach (string descriptionLine in helpItem.Description)
+					xConsole.WriteLine("  " + descriptionLine);
+		}
+	}
 }
