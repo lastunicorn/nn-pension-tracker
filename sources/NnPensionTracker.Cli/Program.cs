@@ -12,6 +12,8 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
+using System.Globalization;
+using System.Text.Json;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
 
@@ -33,7 +35,7 @@ internal static class Program
 {
 	internal static Task Main(string[] args)
 	{
-		// todo: Read culture info from appsettings.json file.
+		ApplyCultureFromAppSettings();
 
 		Arguments arguments = new(args);
 
@@ -59,7 +61,7 @@ internal static class Program
 		       ?? TryCreateExportFundUseCase(arguments)
 		       ?? TryCreateClearFundUseCase(arguments)
 		       ?? TryCreateShowFundUseCase(arguments)
-		       ?? TryCreateHelpUseCase(arguments);
+		       ?? TryCreateHelpUseCase();
 	}
 
 	private static IUseCase TryCreateImportAccountUseCase(Arguments arguments)
@@ -295,9 +297,57 @@ internal static class Program
 		return new ShowFundUseCase(unitOfWork);
 	}
 
-	private static IUseCase TryCreateHelpUseCase(Arguments arguments)
+	private static IUseCase TryCreateHelpUseCase()
 	{
 		return new HelpUseCase();
+	}
+
+	internal static bool TryReadCultureInfoFromAppSettings(string appSettingsPath, out CultureInfo cultureInfo)
+	{
+		string filePath = string.IsNullOrWhiteSpace(appSettingsPath)
+			? Path.Combine(AppContext.BaseDirectory, "appsettings.json")
+			: appSettingsPath;
+
+		if (!File.Exists(filePath))
+		{
+			cultureInfo = CultureInfo.CurrentCulture;
+			return false;
+		}
+
+		using FileStream stream = File.OpenRead(filePath);
+		using JsonDocument document = JsonDocument.Parse(stream);
+
+		if (TryReadCultureName(document.RootElement, out string cultureName))
+		{
+			cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+			return true;
+		}
+
+		cultureInfo = CultureInfo.CurrentCulture;
+		return false;
+	}
+
+	private static void ApplyCultureFromAppSettings()
+	{
+		TryReadCultureInfoFromAppSettings(null, out CultureInfo cultureInfo);
+
+		CultureInfo.CurrentCulture = cultureInfo;
+		CultureInfo.CurrentUICulture = cultureInfo;
+		CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+	}
+
+	private static bool TryReadCultureName(JsonElement rootElement, out string cultureName)
+	{
+		if (rootElement.TryGetProperty("CultureInfo", out JsonElement cultureInfoElement))
+		{
+			cultureName = cultureInfoElement.GetString() ?? string.Empty;
+			if (!string.IsNullOrWhiteSpace(cultureName))
+				return true;
+		}
+
+		cultureName = string.Empty;
+		return false;
 	}
 
 	private static Database OpenDatabase()
