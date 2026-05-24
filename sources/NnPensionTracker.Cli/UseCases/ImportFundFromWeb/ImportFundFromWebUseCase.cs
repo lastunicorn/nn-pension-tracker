@@ -38,7 +38,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 
 		IEnumerable<FundNav> fundNavs = await ReadFromNnApi();
 
-		ImportDiagnostics importDiagnostics = AddToStorage(fundNavs);
+		ImportDiagnostics importDiagnostics = await AddToStorage(fundNavs);
 		DisplayImportDiagnostics($"Fund NAV values for {Year}", importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
@@ -69,7 +69,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 			.ToList();
 	}
 
-	private ImportDiagnostics AddToStorage(IEnumerable<FundNav> fundNavs)
+	private async Task<ImportDiagnostics> AddToStorage(IEnumerable<FundNav> fundNavs)
 	{
 		ImportDiagnostics importDiagnostics = new();
 
@@ -77,7 +77,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 		{
 			foreach (FundNav fundNav in fundNavs)
 			{
-				FundNav existingFundNav = unitOfWork.FundNavRepository.Get(fundNav.Date);
+				FundNav existingFundNav = await unitOfWork.FundNavRepository.GetAsync(fundNav.Date);
 
 				if (existingFundNav == null)
 				{

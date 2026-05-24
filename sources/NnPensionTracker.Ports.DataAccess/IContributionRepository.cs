@@ -8,7 +8,7 @@ public interface IContributionRepository
 
 	IAsyncEnumerable<Contribution> GetByYear(int year);
 	
-	Contribution Get(MonthDate contributionMonth);
+	Task<Contribution> GetAsync(MonthDate contributionMonth);
 	
 	void Add(Contribution contribution);
 	

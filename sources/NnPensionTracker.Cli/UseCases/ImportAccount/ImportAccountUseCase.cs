@@ -32,7 +32,7 @@ internal class ImportAccountUseCase : IUseCase
 
 		AddColumnNamesToStorage(documentLoadResult.Document.Header);
 		
-		ImportDiagnostics importDiagnostics = AddContributionsToStorage(documentLoadResult.Document);
+		ImportDiagnostics importDiagnostics = await AddContributionsToStorage(documentLoadResult.Document);
 		DisplayImportDiagnostics(importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
@@ -81,7 +81,7 @@ internal class ImportAccountUseCase : IUseCase
 		diagnosticsGrid.Display();
 	}
 
-	private ImportDiagnostics AddContributionsToStorage(ContributionsDocument contributionsDocument)
+	private async Task<ImportDiagnostics> AddContributionsToStorage(ContributionsDocument contributionsDocument)
 	{
 		Console.WriteLine($"Importing {contributionsDocument.Count} contributions into database.");
 
@@ -89,7 +89,7 @@ internal class ImportAccountUseCase : IUseCase
 
 		foreach (Contribution contribution in contributionsDocument)
 		{
-			Contribution existingContribution = unitOfWork.ContributionRepository.Get(contribution.Month);
+			Contribution existingContribution = await unitOfWork.ContributionRepository.GetAsync(contribution.Month);
 
 			if (existingContribution == null)
 			{

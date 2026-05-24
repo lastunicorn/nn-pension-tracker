@@ -4,48 +4,49 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class FundNavRepository : IFundNavRepository
 {
-    private readonly Database database;
+	private readonly Database database;
 
-    public FundNavRepository(Database database)
-    {
-        this.database = database ?? throw new ArgumentNullException(nameof(database));
-    }
+	public FundNavRepository(Database database)
+	{
+		this.database = database ?? throw new ArgumentNullException(nameof(database));
+	}
 
-    public FundNav Get(DateTime date)
-    {
-        return database.FundRecords.FirstOrDefault(x => x.Date == date);
-    }
+	public Task<FundNav> GetAsync(DateTime date)
+	{
+		FundNav fundNav = database.FundNavs.FirstOrDefault(x => x.Date == date);
+		return Task.FromResult(fundNav);
+	}
 
-    public async IAsyncEnumerable<FundNav> GetAll()
-    {
-        foreach (FundNav fundNav in database.FundRecords)
-        {
-            yield return fundNav;
-            await Task.Yield();
-        }
-    }
+	public async IAsyncEnumerable<FundNav> GetAll()
+	{
+		foreach (FundNav fundNav in database.FundNavs)
+		{
+			yield return fundNav;
+			await Task.Yield();
+		}
+	}
 
-    public async IAsyncEnumerable<FundNav> GetByYear(int year)
-    {
-        foreach (FundNav fundNav in database.FundRecords)
-        {
-            if (fundNav.Date.Year != year)
-                continue;
+	public async IAsyncEnumerable<FundNav> GetByYear(int year)
+	{
+		IEnumerable<FundNav> fundNavs = database.FundNavs
+			.Where(fundNav => fundNav.Date.Year == year);
 
-            yield return fundNav;
-            await Task.Yield();
-        }
-    }
+		foreach (FundNav fundNav in fundNavs)
+		{
+			yield return fundNav;
+			await Task.Yield();
+		}
+	}
 
-    public void Add(FundNav fundNav)
-    {
-        if (fundNav == null) throw new ArgumentNullException(nameof(fundNav));
+	public void Add(FundNav fundNav)
+	{
+		if (fundNav == null) throw new ArgumentNullException(nameof(fundNav));
 
-        database.FundRecords.Add(fundNav);
-    }
+		database.FundNavs.Add(fundNav);
+	}
 
-    public void Clear()
-    {
-        database.FundRecords.Clear();
-    }
+	public void Clear()
+	{
+		database.FundNavs.Clear();
+	}
 }

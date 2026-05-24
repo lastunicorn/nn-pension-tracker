@@ -42,7 +42,7 @@ internal class ImportFundFromFileUseCase : IUseCase
         foreach (string path in filePaths)
         {
             IEnumerable<FundNav> fundNavs = ReadFromFile(path);
-            ImportDiagnostics importDiagnostics = Import(fundNavs);
+                  ImportDiagnostics importDiagnostics = await AddToStorage(fundNavs);
             DisplayImportDiagnostics(Path.GetFileName(path), importDiagnostics);
 
             totalDiagnostics.AddCount += importDiagnostics.AddCount;
@@ -76,7 +76,7 @@ internal class ImportFundFromFileUseCase : IUseCase
         }
     }
 
-    private ImportDiagnostics Import(IEnumerable<FundNav> fundNavs)
+      private async Task<ImportDiagnostics> AddToStorage(IEnumerable<FundNav> fundNavs)
     {
         ImportDiagnostics importDiagnostics = new();
 
@@ -84,7 +84,7 @@ internal class ImportFundFromFileUseCase : IUseCase
         {
             foreach (FundNav fundNav in fundNavs)
             {
-                FundNav existingFundNav = unitOfWork.FundNavRepository.Get(fundNav.Date);
+                        FundNav existingFundNav = await unitOfWork.FundNavRepository.GetAsync(fundNav.Date);
 
                 if (existingFundNav == null)
                 {

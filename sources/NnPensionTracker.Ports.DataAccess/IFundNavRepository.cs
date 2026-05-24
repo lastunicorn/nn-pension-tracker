@@ -4,11 +4,11 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public interface IFundNavRepository
 {
-	FundNav Get(DateTime date);
-	
 	IAsyncEnumerable<FundNav> GetAll();
 	
 	IAsyncEnumerable<FundNav> GetByYear(int year);
+	
+	Task<FundNav> GetAsync(DateTime date);
 	
 	void Add(FundNav fundNav);
 	

@@ -4,48 +4,49 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class ContributionRepository : IContributionRepository
 {
-    private readonly Database database;
+	private readonly Database database;
 
-    public ContributionRepository(Database database)
-    {
-        this.database = database ?? throw new ArgumentNullException(nameof(database));
-    }
+	public ContributionRepository(Database database)
+	{
+		this.database = database ?? throw new ArgumentNullException(nameof(database));
+	}
 
-    public async IAsyncEnumerable<Contribution> GetAll()
-    {
-        foreach (Contribution contribution in database.Contributions)
-        {
-            yield return contribution;
-            await Task.Yield();
-        }
-    }
+	public async IAsyncEnumerable<Contribution> GetAll()
+	{
+		foreach (Contribution contribution in database.Contributions)
+		{
+			yield return contribution;
+			await Task.Yield();
+		}
+	}
 
-    public async IAsyncEnumerable<Contribution> GetByYear(int year)
-    {
-        foreach (Contribution contribution in database.Contributions)
-        {
-            if (contribution.Month.Year != year)
-                continue;
+	public async IAsyncEnumerable<Contribution> GetByYear(int year)
+	{
+		IEnumerable<Contribution> contributions = database.Contributions
+			.Where(x => x.Month.Year == year);
 
-            yield return contribution;
-            await Task.Yield();
-        }
-    }
+		foreach (Contribution contribution in contributions)
+		{
+			yield return contribution;
+			await Task.Yield();
+		}
+	}
 
-    public Contribution Get(MonthDate contributionMonth)
-    {
-        return database.Contributions.FirstOrDefault(x => x.Month == contributionMonth);
-    }
+	public Task<Contribution> GetAsync(MonthDate contributionMonth)
+	{
+		Contribution contribution = database.Contributions.FirstOrDefault(x => x.Month == contributionMonth);
+		return Task.FromResult(contribution);
+	}
 
-    public void Add(Contribution contribution)
-    {
-        if (contribution == null) throw new ArgumentNullException(nameof(contribution));
+	public void Add(Contribution contribution)
+	{
+		if (contribution == null) throw new ArgumentNullException(nameof(contribution));
 
-        database.Contributions.Add(contribution);
-    }
+		database.Contributions.Add(contribution);
+	}
 
-    public void Clear()
-    {
-        database.Contributions.Clear();
-    }
+	public void Clear()
+	{
+		database.Contributions.Clear();
+	}
 }
