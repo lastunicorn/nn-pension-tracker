@@ -7,6 +7,9 @@ using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 
+/// <summary>
+/// Imports fund values from the NN API.
+/// </summary>
 internal class ImportFundFromWebUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;

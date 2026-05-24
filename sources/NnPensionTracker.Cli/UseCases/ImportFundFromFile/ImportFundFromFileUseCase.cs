@@ -10,6 +10,12 @@ using NnPensionTracker.Ports.FileSystemAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 
+/// <summary>
+/// Imports fund values from a CSV file.
+/// The CSV file structure:
+///     - "Date": date
+///     - "Quote": number
+/// </summary>
 internal class ImportFundFromFileUseCase : IUseCase
 {
     public string FilePath { get; init; }

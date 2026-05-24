@@ -1,13 +1,18 @@
 using System.Globalization;
 using CsvHelper;
 using DustInTheWind.ConsoleTools;
-using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportFund;
 
+/// <summary>
+/// Exports fund NAV values to a CSV file.
+/// The CSV file structure:
+///     - "Date": date
+///     - "Quote": number
+/// </summary>
 internal class ExportFundUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;

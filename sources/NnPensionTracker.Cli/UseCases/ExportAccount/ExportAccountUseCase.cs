@@ -4,6 +4,11 @@ using NnPensionTracker.Ports.FileSystemAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
 
+/// <summary>
+/// Exports contributions to CSV files in the format required by Portfolio Performance application.
+/// nn_transactions.csv -> "Security Name,Ticker Symbol,Date,Time,Value,Shares,Type,Fees,Note"
+/// nn_cash_transactions.csv -> "Type,Cash Account,Date,Time,Value,Note"
+/// </summary>
 internal class ExportAccountUseCase : IUseCase
 {
     private readonly IUnitOfWork unitOfWork;
