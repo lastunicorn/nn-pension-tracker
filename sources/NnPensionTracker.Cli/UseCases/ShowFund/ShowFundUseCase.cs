@@ -7,35 +7,36 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
 
 internal class ShowFundUseCase : IUseCase
 {
-    private readonly IUnitOfWork unitOfWork;
+	private readonly IUnitOfWork unitOfWork;
 
-    public ShowFundUseCase(IUnitOfWork unitOfWork)
-    {
-        this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-    }
+	public ShowFundUseCase(IUnitOfWork unitOfWork)
+	{
+		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+	}
 
-    public Task Execute()
-    {
-        IEnumerable<FundNav> fundRecords = unitOfWork.FundNavRepository.GetAll();
-        DisplayFundRecords(fundRecords);
-        
-        return Task.CompletedTask;
-    }
+	public Task Execute()
+	{
+		IEnumerable<FundNav> fundRecords = unitOfWork.FundNavRepository.GetAll()
+			.OrderBy(x => x.Date);
+		DisplayFundRecords(fundRecords);
 
-    private void DisplayFundRecords(IEnumerable<FundNav> fundRecords)
-    {
-        DataGrid dataGrid = new();
+		return Task.CompletedTask;
+	}
 
-        dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
-        dataGrid.Columns.Add("Value", HorizontalAlignment.Right);
+	private void DisplayFundRecords(IEnumerable<FundNav> fundRecords)
+	{
+		DataGrid dataGrid = new();
 
-        foreach (FundNav fundRecord in fundRecords)
-        {
-            dataGrid.Rows.Add(
-                fundRecord.Date,
-                fundRecord.Value);
-        }
+		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
+		dataGrid.Columns.Add("Value", HorizontalAlignment.Right);
 
-        dataGrid.Display();
-    }
+		foreach (FundNav fundRecord in fundRecords)
+		{
+			dataGrid.Rows.Add(
+				fundRecord.Date,
+				fundRecord.Value);
+		}
+
+		dataGrid.Display();
+	}
 }

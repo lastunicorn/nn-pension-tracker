@@ -208,20 +208,23 @@ internal static class Program
 		if (isMatch)
 		{
 			Argument yearArgument = arguments["year"];
-			Argument fromArgument = arguments["from"];
-			Argument toArgument = arguments["to"];
-
 			int? year = yearArgument != null
 				? int.Parse(yearArgument.Value!)
 				: null;
 
+			Argument fromArgument = arguments["from"];
 			DateOnly? fromDate = fromArgument != null
 				? DateOnly.Parse(fromArgument.Value!)
 				: null;
 
+			Argument toArgument = arguments["to"];
 			DateOnly? toDate = toArgument != null
 				? DateOnly.Parse(toArgument.Value!)
 				: null;
+			
+			Argument verboseArgument = arguments["verbose"];
+			
+			bool verboseLogging = verboseArgument != null && (verboseArgument.Value == null || verboseArgument.Value == "true");
 
 			Database database = OpenDatabase();
 			UnitOfWork unitOfWork = new(database);
@@ -230,7 +233,8 @@ internal static class Program
 			{
 				Year = year,
 				FromDate = fromDate,
-				ToDate = toDate
+				ToDate = toDate,
+				VerboseLogging = verboseLogging
 			};
 		}
 

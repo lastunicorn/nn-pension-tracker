@@ -9,111 +9,124 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 
 internal class ImportFundFromWebUseCase : IUseCase
 {
-    private readonly IUnitOfWork unitOfWork;
-    private readonly INnApiClient nnApiClient;
+	private readonly IUnitOfWork unitOfWork;
+	private readonly INnApiClient nnApiClient;
 
-    private static readonly DateOnly UnixEpoch = new(1970, 1, 1);
+	private static readonly DateOnly UnixEpoch = new(1970, 1, 1);
 
-    public DateOnly? FromDate { get; init; }
+	public DateOnly? FromDate { get; init; }
 
-    public DateOnly? ToDate { get; init; }
+	public DateOnly? ToDate { get; init; }
 
-    public int? Year { get; init; }
+	public int? Year { get; init; }
 
-    public ImportFundFromWebUseCase(IUnitOfWork unitOfWork, INnApiClient nnApiClient)
-    {
-        this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this.nnApiClient = nnApiClient ?? throw new ArgumentNullException(nameof(nnApiClient));
-    }
+	public bool VerboseLogging { get; init; }
 
-    public async Task Execute()
-    {
-        if (Year == null && FromDate == null && ToDate == null)
-            throw new Exception("A date interval must be specified. Either a year or a from and to date.");
+	public ImportFundFromWebUseCase(IUnitOfWork unitOfWork, INnApiClient nnApiClient)
+	{
+		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+		this.nnApiClient = nnApiClient ?? throw new ArgumentNullException(nameof(nnApiClient));
+	}
 
-        IEnumerable<FundNav> fundNavs = await ReadFromNnApi();
+	public async Task Execute()
+	{
+		if (Year == null && FromDate == null && ToDate == null)
+			throw new Exception("A date interval must be specified. Either a 'year' or a 'from' and 'to' date.");
 
-        ImportDiagnostics importDiagnostics = Import(fundNavs);
-        DisplayImportDiagnostics($"Fund NAV values for {Year}", importDiagnostics);
+		IEnumerable<FundNav> fundNavs = await ReadFromNnApi();
 
-        await unitOfWork.SaveChangesAsync();
-    }
+		ImportDiagnostics importDiagnostics = AddToStorage(fundNavs);
+		DisplayImportDiagnostics($"Fund NAV values for {Year}", importDiagnostics);
 
-    private async Task<IEnumerable<FundNav>> ReadFromNnApi()
-    {
-        DateOnly fromDate = Year != null
-            ? new DateOnly(Year.Value, 1, 1)
-            : FromDate ?? UnixEpoch;
+		await unitOfWork.SaveChangesAsync();
+	}
 
-        DateOnly toDate = Year != null
-            ? new DateOnly(Year.Value, 12, 31)
-            : ToDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
+	private async Task<IEnumerable<FundNav>> ReadFromNnApi()
+	{
+		DateOnly fromDate = Year != null
+			? new DateOnly(Year.Value, 1, 1)
+			: FromDate ?? UnixEpoch;
 
-        int numberOfPoints = toDate.DayNumber - fromDate.DayNumber + 1;
+		DateOnly toDate = Year != null
+			? new DateOnly(Year.Value, 12, 31)
+			: ToDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
-        GraphData graphData = await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
+		int numberOfPoints = toDate.DayNumber - fromDate.DayNumber + 1;
 
-        return graphData.Points
-            .Select(x => new FundNav
-            {
-                Date = x.Date,
-                Value = x.Value
-            })
-            .ToList();
-    }
+		Console.WriteLine($"Reading fund NAV values from {fromDate} to {toDate} ({numberOfPoints} points)");
 
-    private ImportDiagnostics Import(IEnumerable<FundNav> fundNavs)
-    {
-        ImportDiagnostics importDiagnostics = new();
+		GraphData graphData = await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
 
-        try
-        {
-            foreach (FundNav fundNav in fundNavs)
-            {
-                FundNav existingFundNav = unitOfWork.FundNavRepository.Get(fundNav.Date);
+		return graphData.Points
+			.Select(x => new FundNav
+			{
+				Date = x.Date,
+				Value = x.Value
+			})
+			.ToList();
+	}
 
-                if (existingFundNav == null)
-                {
-                    unitOfWork.FundNavRepository.Add(fundNav);
-                    importDiagnostics.AddCount++;
-                }
-                else if (existingFundNav.Value == fundNav.Value)
-                {
-                    importDiagnostics.SkipCount++;
-                }
-                else
-                {
-                    existingFundNav.Value = fundNav.Value;
-                    importDiagnostics.UpdateCount++;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            importDiagnostics.Error = ex;
-        }
+	private ImportDiagnostics AddToStorage(IEnumerable<FundNav> fundNavs)
+	{
+		ImportDiagnostics importDiagnostics = new();
 
-        return importDiagnostics;
-    }
+		try
+		{
+			foreach (FundNav fundNav in fundNavs)
+			{
+				FundNav existingFundNav = unitOfWork.FundNavRepository.Get(fundNav.Date);
 
-    private void DisplayImportDiagnostics(string title, ImportDiagnostics importDiagnostics)
-    {
-        DataGrid diagnosticsGrid = new()
-        {
-            Title = title,
-            Margin = new Thickness(0, 1, 0, 1)
-        };
+				if (existingFundNav == null)
+				{
+					if (VerboseLogging)
+						CustomConsole.WriteLine($"[{fundNav.Date} - {fundNav.Value}] Adding fund NAV value.");
 
-        diagnosticsGrid.Columns.Add("Name", HorizontalAlignment.Left);
-        diagnosticsGrid.Columns.Add("Value", HorizontalAlignment.Right);
+					unitOfWork.FundNavRepository.Add(fundNav);
+					importDiagnostics.AddCount++;
+				}
+				else if (existingFundNav.Value == fundNav.Value)
+				{
+					if (VerboseLogging)
+						CustomConsole.WriteLineWarning($"[{fundNav.Date} - {fundNav.Value}] Duplicate fund NAV value. Skipping.");
 
-        diagnosticsGrid.Rows.Add("Add", importDiagnostics.AddCount);
-        diagnosticsGrid.Rows.Add("Update", importDiagnostics.UpdateCount);
-        diagnosticsGrid.Rows.Add("Skip", importDiagnostics.SkipCount);
+					importDiagnostics.SkipCount++;
+				}
+				else
+				{
+					if (VerboseLogging)
+						CustomConsole.WriteLineWarning($"[{fundNav.Date} - {fundNav.Value}] Fund NAV value already exists: [{existingFundNav.Date} - {existingFundNav.Value}]");
 
-        diagnosticsGrid.Display();
+					existingFundNav.Value = fundNav.Value;
+					importDiagnostics.UpdateCount++;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			importDiagnostics.Error = ex;
+		}
 
-        if (importDiagnostics.Error != null)
-            CustomConsole.WriteLineError($"Error importing fund values: {importDiagnostics.Error}");
-    }
+		return importDiagnostics;
+	}
+
+	private void DisplayImportDiagnostics(string title, ImportDiagnostics importDiagnostics)
+	{
+		DataGrid diagnosticsGrid = new()
+		{
+			Title = title,
+			Margin = new Thickness(0, 1, 0, 1)
+		};
+
+		diagnosticsGrid.Columns.Add("Name", HorizontalAlignment.Left);
+		diagnosticsGrid.Columns.Add("Value", HorizontalAlignment.Right);
+
+		diagnosticsGrid.Rows.Add("Add", importDiagnostics.AddCount);
+		diagnosticsGrid.Rows.Add("Update", importDiagnostics.UpdateCount);
+		diagnosticsGrid.Rows.Add("Skip", importDiagnostics.SkipCount);
+
+		diagnosticsGrid.Display();
+
+		if (importDiagnostics.Error != null)
+			CustomConsole.WriteLineError($"Error importing fund values: {importDiagnostics.Error}");
+	}
 }
