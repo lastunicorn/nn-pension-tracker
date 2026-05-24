@@ -15,7 +15,7 @@ internal class ImportAccountUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;
 
-	public string FilePath { get; init; }
+	public string FilePath { get; set; }
 
 	public ImportAccountUseCase(IUnitOfWork unitOfWork)
 	{

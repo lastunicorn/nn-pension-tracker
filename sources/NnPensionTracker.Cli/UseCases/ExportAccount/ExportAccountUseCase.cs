@@ -14,9 +14,9 @@ internal class ExportAccountUseCase : IUseCase
     private readonly IUnitOfWork unitOfWork;
     private readonly IFileSystemService fileSystemService;
 
-    public string ExportFormat { get; init; }
+    public string ExportFormat { get; set; }
 
-    public int? Year { get; init; }
+    public int? Year { get; set; }
 
     public ExportAccountUseCase(IUnitOfWork unitOfWork , IFileSystemService fileSystemService)
     {

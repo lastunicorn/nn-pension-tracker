@@ -19,9 +19,9 @@ internal class ExportFundUseCase : IUseCase
 	private readonly IFileSystemService fileSystemService;
 	private int count;
 
-	public string FilePath { get; init; }
+	public string FilePath { get; set; }
 
-	public int? Year { get; init; }
+	public int? Year { get; set; }
 
 	public ExportFundUseCase(IUnitOfWork unitOfWork, IFileSystemService fileSystemService)
 	{

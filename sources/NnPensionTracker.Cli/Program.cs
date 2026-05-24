@@ -1,5 +1,5 @@
-﻿using DustInTheWind.ConsoleTools.Arguments;
-using DustInTheWind.NN.Toolkit.ApiAccess;
+﻿using System.Globalization;
+using DustInTheWind.ConsoleTools.Arguments;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearFund;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
@@ -10,10 +10,8 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
-using DustInTheWind.NnPensionTracker.Ports.DataAccess;
-using NnPensionTracker.Ports.FileSystemAccess;
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
 
@@ -38,12 +36,32 @@ internal static class Program
 		ApplyCultureFromAppSettings();
 
 		Arguments arguments = new(args);
+		using ServiceProvider serviceProvider = CreateServiceProvider();
 
-		IUseCase useCase = CreateUseCase(arguments) ?? new HelpUseCase();
+		IUseCase useCase = CreateUseCase(arguments, serviceProvider)
+			?? serviceProvider.GetRequiredService<HelpUseCase>();
+		
 		return useCase.Execute();
 	}
 
-	private static IUseCase CreateUseCase(Arguments arguments)
+	private static void ApplyCultureFromAppSettings()
+	{
+		TryReadCultureInfoFromAppSettings(null, out CultureInfo cultureInfo);
+
+		CultureInfo.CurrentCulture = cultureInfo;
+		CultureInfo.CurrentUICulture = cultureInfo;
+		CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+	}
+
+	private static ServiceProvider CreateServiceProvider()
+	{
+		ServiceCollection services = new();
+		Setup.ConfigureServices(services);
+		return services.BuildServiceProvider();
+	}
+
+	private static IUseCase CreateUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		if (arguments.Count == 0)
 			return null;
@@ -52,19 +70,19 @@ internal static class Program
 		if (noun?.Type != ArgumentType.Ordinal)
 			return null;
 
-		return TryCreateImportAccountUseCase(arguments)
-		       ?? TryCreateExportAccountUseCase(arguments)
-		       ?? TryCreateClearAccountUseCase(arguments)
-		       ?? TryCreateShowAccountUseCase(arguments)
-		       ?? TryCreateImportFundFromFileUseCase(arguments)
-		       ?? TryCreateImportFundFromWebUseCase(arguments)
-		       ?? TryCreateExportFundUseCase(arguments)
-		       ?? TryCreateClearFundUseCase(arguments)
-		       ?? TryCreateShowFundUseCase(arguments)
-		       ?? TryCreateHelpUseCase();
+		return TryCreateImportAccountUseCase(arguments, serviceProvider)
+		       ?? TryCreateExportAccountUseCase(arguments, serviceProvider)
+		       ?? TryCreateClearAccountUseCase(arguments, serviceProvider)
+		       ?? TryCreateShowAccountUseCase(arguments, serviceProvider)
+		       ?? TryCreateImportFundFromFileUseCase(arguments, serviceProvider)
+		       ?? TryCreateImportFundFromWebUseCase(arguments, serviceProvider)
+		       ?? TryCreateExportFundUseCase(arguments, serviceProvider)
+		       ?? TryCreateClearFundUseCase(arguments, serviceProvider)
+		       ?? TryCreateShowFundUseCase(arguments, serviceProvider)
+		       ?? TryCreateHelpUseCase(serviceProvider);
 	}
 
-	private static IUseCase TryCreateImportAccountUseCase(Arguments arguments)
+	private static IUseCase TryCreateImportAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -78,15 +96,12 @@ internal static class Program
 
 		Argument fileArgument = arguments["file"] ?? arguments[2];
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		return new ImportAccountUseCase(unitOfWork)
-		{
-			FilePath = fileArgument?.Value
-		};
+		ImportAccountUseCase useCase = serviceProvider.GetRequiredService<ImportAccountUseCase>();
+		useCase.FilePath = fileArgument?.Value;
+		return useCase;
 	}
 
-	private static IUseCase TryCreateExportAccountUseCase(Arguments arguments)
+	private static IUseCase TryCreateExportAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -104,17 +119,13 @@ internal static class Program
 			? int.Parse(yearArgument.Value!)
 			: null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		FileSystemService fileSystemService = new();
-		return new ExportAccountUseCase(unitOfWork, fileSystemService)
-		{
-			ExportFormat = formatArgument?.Value,
-			Year = year
-		};
+		ExportAccountUseCase useCase = serviceProvider.GetRequiredService<ExportAccountUseCase>();
+		useCase.ExportFormat = formatArgument?.Value;
+		useCase.Year = year;
+		return useCase;
 	}
 
-	private static IUseCase TryCreateClearAccountUseCase(Arguments arguments)
+	private static IUseCase TryCreateClearAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -126,12 +137,10 @@ internal static class Program
 		if (verb?.Value != "clear")
 			return null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		return new ClearAccountUseCase(unitOfWork);
+		return serviceProvider.GetRequiredService<ClearAccountUseCase>();
 	}
 
-	private static IUseCase TryCreateShowAccountUseCase(Arguments arguments)
+	private static IUseCase TryCreateShowAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -143,12 +152,10 @@ internal static class Program
 		if (verb != null && verb.Value != "show")
 			return null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		return new ShowAccountUseCase(unitOfWork);
+		return serviceProvider.GetRequiredService<ShowAccountUseCase>();
 	}
 
-	private static IUseCase TryCreateImportFundFromFileUseCase(Arguments arguments)
+	private static IUseCase TryCreateImportFundFromFileUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -175,19 +182,15 @@ internal static class Program
 		{
 			Argument fileArgument = arguments["file"];
 
-			Database database = OpenDatabase();
-			UnitOfWork unitOfWork = new(database);
-			FileSystemService fileSystemService = new();
-			return new ImportFundFromFileUseCase(unitOfWork, fileSystemService)
-			{
-				FilePath = fileArgument?.Value
-			};
+			ImportFundFromFileUseCase useCase = serviceProvider.GetRequiredService<ImportFundFromFileUseCase>();
+			useCase.FilePath = fileArgument?.Value;
+			return useCase;
 		}
 
 		return null;
 	}
 
-	private static IUseCase TryCreateImportFundFromWebUseCase(Arguments arguments)
+	private static IUseCase TryCreateImportFundFromWebUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -226,27 +229,23 @@ internal static class Program
 			DateOnly? toDate = toArgument != null
 				? DateOnly.Parse(toArgument.Value!)
 				: null;
-			
+
 			Argument verboseArgument = arguments["verbose"];
-			
+
 			bool verboseLogging = verboseArgument != null && (verboseArgument.Value == null || verboseArgument.Value == "true");
 
-			Database database = OpenDatabase();
-			UnitOfWork unitOfWork = new(database);
-			NnApiClient nnApiClient = new();
-			return new ImportFundFromWebUseCase(unitOfWork, nnApiClient)
-			{
-				Year = year,
-				FromDate = fromDate,
-				ToDate = toDate,
-				VerboseLogging = verboseLogging
-			};
+			ImportFundFromWebUseCase useCase = serviceProvider.GetRequiredService<ImportFundFromWebUseCase>();
+			useCase.Year = year;
+			useCase.FromDate = fromDate;
+			useCase.ToDate = toDate;
+			useCase.VerboseLogging = verboseLogging;
+			return useCase;
 		}
 
 		return null;
 	}
 
-	private static IUseCase TryCreateExportFundUseCase(Arguments arguments)
+	private static IUseCase TryCreateExportFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -268,17 +267,13 @@ internal static class Program
 			? int.Parse(yearArgument.Value!)
 			: null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		FileSystemService fileSystemService = new();
-		return new ExportFundUseCase(unitOfWork, fileSystemService)
-		{
-			FilePath = fileArgument.Value,
-			Year = year
-		};
+		ExportFundUseCase useCase = serviceProvider.GetRequiredService<ExportFundUseCase>();
+		useCase.FilePath = fileArgument.Value;
+		useCase.Year = year;
+		return useCase;
 	}
 
-	private static IUseCase TryCreateClearFundUseCase(Arguments arguments)
+	private static IUseCase TryCreateClearFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -290,12 +285,10 @@ internal static class Program
 		if (verb?.Value != "clear")
 			return null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		return new ClearFundUseCase(unitOfWork);
+		return serviceProvider.GetRequiredService<ClearFundUseCase>();
 	}
 
-	private static IUseCase TryCreateShowFundUseCase(Arguments arguments)
+	private static IUseCase TryCreateShowFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
@@ -307,14 +300,12 @@ internal static class Program
 		if (verb != null && verb.Value != "show")
 			return null;
 
-		Database database = OpenDatabase();
-		UnitOfWork unitOfWork = new(database);
-		return new ShowFundUseCase(unitOfWork);
+		return serviceProvider.GetRequiredService<ShowFundUseCase>();
 	}
 
-	private static IUseCase TryCreateHelpUseCase()
+	private static IUseCase TryCreateHelpUseCase(IServiceProvider serviceProvider)
 	{
-		return new HelpUseCase();
+		return serviceProvider.GetRequiredService<HelpUseCase>();
 	}
 
 	internal static bool TryReadCultureInfoFromAppSettings(string appSettingsPath, out CultureInfo cultureInfo)
@@ -344,23 +335,5 @@ internal static class Program
 
 		cultureInfo = CultureInfo.CurrentCulture;
 		return false;
-	}
-
-	private static void ApplyCultureFromAppSettings()
-	{
-		TryReadCultureInfoFromAppSettings(null, out CultureInfo cultureInfo);
-
-		CultureInfo.CurrentCulture = cultureInfo;
-		CultureInfo.CurrentUICulture = cultureInfo;
-		CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-	}
-
-
-	private static Database OpenDatabase()
-	{
-		Database database = new();
-		database.OpenAsync().GetAwaiter().GetResult();
-		return database;
 	}
 }

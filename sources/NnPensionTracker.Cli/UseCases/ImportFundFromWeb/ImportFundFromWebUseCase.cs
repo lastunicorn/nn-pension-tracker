@@ -17,13 +17,13 @@ internal class ImportFundFromWebUseCase : IUseCase
 
 	private static readonly DateOnly UnixEpoch = new(1970, 1, 1);
 
-	public DateOnly? FromDate { get; init; }
+	public DateOnly? FromDate { get; set; }
 
-	public DateOnly? ToDate { get; init; }
+	public DateOnly? ToDate { get; set; }
 
-	public int? Year { get; init; }
+	public int? Year { get; set; }
 
-	public bool VerboseLogging { get; init; }
+	public bool VerboseLogging { get; set; }
 
 	public ImportFundFromWebUseCase(IUnitOfWork unitOfWork, INnApiClient nnApiClient)
 	{
@@ -33,8 +33,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 
 	public async Task Execute()
 	{
-		if (Year == null && FromDate == null && ToDate == null)
-			throw new Exception("A date interval must be specified. Either a 'year' or a 'from' and 'to' date.");
+		ValidateDateInterval();
 
 		IEnumerable<FundNav> fundNavs = await ReadFromNnApi();
 
@@ -42,6 +41,18 @@ internal class ImportFundFromWebUseCase : IUseCase
 		DisplayImportDiagnostics($"Fund NAV values for {Year}", importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
+	}
+	
+	private void ValidateDateInterval()
+	{
+		if (Year == null && FromDate == null && ToDate == null)
+			throw new Exception("A date interval must be specified. Either a 'year' or both 'from' and 'to' dates.");
+
+		if (Year != null && (FromDate != null || ToDate != null))
+			throw new Exception("Please specify either 'year' or the 'from'/'to' interval, not both.");
+
+		if (Year == null && (FromDate == null || ToDate == null))
+			throw new Exception("When 'year' is not provided, both 'from' and 'to' dates are required.");
 	}
 
 	private async Task<IEnumerable<FundNav>> ReadFromNnApi()
@@ -65,8 +76,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 			{
 				Date = x.Date,
 				Value = x.Value
-			})
-			.ToList();
+			});
 	}
 
 	private async Task<ImportDiagnostics> AddToStorage(IEnumerable<FundNav> fundNavs)
