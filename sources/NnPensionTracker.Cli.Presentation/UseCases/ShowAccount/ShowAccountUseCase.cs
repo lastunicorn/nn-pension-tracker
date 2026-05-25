@@ -9,6 +9,10 @@ public class ShowAccountUseCase : IUseCase
 {
     private readonly IUnitOfWork unitOfWork;
 
+    public int? Year { get; set; }
+
+    public int? Month { get; set; }
+
     public ShowAccountUseCase(IUnitOfWork unitOfWork)
     {
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -16,8 +20,21 @@ public class ShowAccountUseCase : IUseCase
     
     public async Task Execute()
     {
-        IAsyncEnumerable<Contribution> contributions = unitOfWork.ContributionRepository.GetAll();
-        await DisplayContributions(contributions);
+        IAsyncEnumerable<Contribution> source;
+
+        if (Year.HasValue)
+        {
+            if (Month.HasValue)
+                source = unitOfWork.ContributionRepository.GetByYearMonth(Year.Value, Month.Value);
+            else
+                source = unitOfWork.ContributionRepository.GetByYear(Year.Value);
+        }
+        else
+        {
+            source = unitOfWork.ContributionRepository.GetAll();
+        }
+
+        await DisplayContributions(source);
     }
 
     private async Task DisplayContributions(IAsyncEnumerable<Contribution> contributions)

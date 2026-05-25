@@ -9,8 +9,13 @@ public class HelpUseCase : IUseCase
 		Display([
 			new HelpItem
 			{
-				Command = "account [show]",
-				Description = "Displays the contributions from the current account."
+				Command = "account [show] [--year <year> [--month <month>]]",
+				Description =
+				[
+					"Displays the contributions from the current account.",
+					"If --year is specified, only contributions from that year are displayed.",
+					"If --month is specified (requires --year), only contributions from that specific month are displayed."
+				]
 			},
 			new HelpItem
 			{

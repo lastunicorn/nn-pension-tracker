@@ -32,6 +32,21 @@ public class ContributionRepository : IContributionRepository
 		}
 	}
 
+	public async IAsyncEnumerable<Contribution> GetByYearMonth(int year, int? month)
+	{
+		IEnumerable<Contribution> contributions = database.Contributions
+			.Where(x => x.Month.Year == year);
+
+		if (month.HasValue)
+			contributions = contributions.Where(x => x.Month.Month == month.Value);
+
+		foreach (Contribution contribution in contributions)
+		{
+			yield return contribution;
+			await Task.Yield();
+		}
+	}
+
 	public Task<Contribution> GetAsync(MonthDate contributionMonth)
 	{
 		Contribution contribution = database.Contributions.FirstOrDefault(x => x.Month == contributionMonth);

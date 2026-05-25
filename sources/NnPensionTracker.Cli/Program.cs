@@ -192,7 +192,20 @@ internal static class Program
 		if (verb != null && verb.Type == ArgumentType.Ordinal && verb.Value != "show")
 			return null;
 
-		return serviceProvider.GetRequiredService<ShowAccountUseCase>();
+		Argument yearArgument = arguments["year"];
+		int? year = yearArgument != null
+			? int.Parse(yearArgument.Value!)
+			: null;
+
+		Argument monthArgument = arguments["month"];
+		int? month = null;
+		if (year.HasValue && monthArgument != null)
+			month = int.Parse(monthArgument.Value!);
+
+		ShowAccountUseCase useCase = serviceProvider.GetRequiredService<ShowAccountUseCase>();
+		useCase.Year = year;
+		useCase.Month = month;
+		return useCase;
 	}
 
 	private static IUseCase TryCreateImportFundFromFileUseCase(Arguments arguments, IServiceProvider serviceProvider)
