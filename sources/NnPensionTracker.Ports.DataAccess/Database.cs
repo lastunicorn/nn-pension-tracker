@@ -8,6 +8,8 @@ public class Database
 	public List<Contribution> Contributions { get; } = [];
 
 	public List<FundNav> FundNavs { get; } = [];
+	
+	public List<DataLabel> DataLabels { get; } = [];
 
 	public async Task OpenAsync()
 	{
@@ -16,6 +18,9 @@ public class Database
 
 		FundRecordPersister fundRecordPersister = new();
 		FundNavs.AddRange(await fundRecordPersister.LoadAsync());
+		
+		DataLabelParser dataLabelParser = new();
+		DataLabels.AddRange(await dataLabelParser.LoadAsync());
 	}
 
 	public async Task SaveAllAsync()
@@ -25,5 +30,8 @@ public class Database
 
 		FundRecordPersister fundRecordPersister = new();
 		await fundRecordPersister.SaveAsync(FundNavs);
+		
+		DataLabelParser dataLabelParser = new();
+		await dataLabelParser.SaveAsync(DataLabels);
 	}
 }

@@ -1,0 +1,22 @@
+using DustInTheWind.NnPensionTracker.Domain;
+
+namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
+
+public class DataLabelRepository : IDataLabelRepository
+{
+	private readonly Database database;
+
+	public DataLabelRepository(Database database)
+	{
+		this.database = database ?? throw new ArgumentNullException(nameof(database));
+	}
+
+	public async IAsyncEnumerable<DataLabel> GetAll()
+	{
+		foreach (DataLabel dataLabel in database.DataLabels)
+		{
+			yield return dataLabel;
+			await Task.Yield();
+		}
+	}
+}

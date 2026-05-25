@@ -1,17 +1,19 @@
 using System.Globalization;
+using System.Reflection;
 using CsvHelper;
 using CsvHelper.Configuration;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
+using DustInTheWind.NnPensionTracker.Domain;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
 
 internal sealed class NnTransactionsDocument : IDisposable, IAsyncDisposable
 {
-    private readonly IList<string> labels;
+    private readonly IList<DataLabel> labels;
     private readonly StreamWriter streamWriter;
     private readonly CsvWriter csvWriter;
 
-    public NnTransactionsDocument(StreamWriter streamWriter, IList<string> labels)
+    public NnTransactionsDocument(StreamWriter streamWriter, IList<DataLabel> labels)
     {
         this.streamWriter = streamWriter ?? throw new ArgumentNullException(nameof(streamWriter));
         this.labels = labels;
@@ -40,7 +42,19 @@ internal sealed class NnTransactionsDocument : IDisposable, IAsyncDisposable
         string date = $"{contribution.PaidInMonth.Year:00}-{contribution.PaidInMonth.Month:00}-01";
         string note = labels == null
             ? string.Empty
-            : string.Join("; ", labels.Zip(contribution.ToStringArray(), (h, v) => $"{h}={v}"));
+            : string.Join("; ", typeof(Contribution)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(prop =>
+                {
+                    string labelKey = $"Contribution.{prop.Name}";
+                    string labelValue = labels.FirstOrDefault(x => x.Key == labelKey)?.Value ?? prop.Name;
+                    object value = prop.GetValue(contribution);
+                    string valueStr = value is IFormattable formattable
+                        ? formattable.ToString(null, CultureInfo.InvariantCulture)
+                        : value?.ToString() ?? string.Empty;
+                    return $"{labelValue}={valueStr}";
+                }));
+        
 
         csvWriter.WriteField("NN");
         csvWriter.WriteField("NN");

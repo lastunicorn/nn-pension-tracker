@@ -1,4 +1,5 @@
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
+using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 
@@ -11,67 +12,59 @@ namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount
 /// </summary>
 public class ExportAccountUseCase : IUseCase
 {
-    private readonly IUnitOfWork unitOfWork;
-    private readonly IFileSystemService fileSystemService;
+	private readonly IUnitOfWork unitOfWork;
+	private readonly IFileSystemService fileSystemService;
 
-    public string ExportFormat { get; set; }
+	public string ExportFormat { get; set; }
 
-    public int? Year { get; set; }
+	public int? Year { get; set; }
 
-    public ExportAccountUseCase(IUnitOfWork unitOfWork , IFileSystemService fileSystemService)
-    {
-        this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
-    }
+	public ExportAccountUseCase(IUnitOfWork unitOfWork, IFileSystemService fileSystemService)
+	{
+		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+		this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+	}
 
-    public async Task Execute()
-    {
-        string exportFormatSafe = ExportFormat ?? "pp";
+	public async Task Execute()
+	{
+		string exportFormatSafe = ExportFormat ?? "pp";
 
-        switch (exportFormatSafe.ToLower())
-        {
-            case "pp":
-                IAsyncEnumerable<Contribution> contributions = Year != null
-                    ? unitOfWork.ContributionRepository.GetByYear(Year.Value)
-                    : unitOfWork.ContributionRepository.GetAll();
+		switch (exportFormatSafe.ToLower())
+		{
+			case "pp":
+				IAsyncEnumerable<Contribution> contributions = Year != null
+					? unitOfWork.ContributionRepository.GetByYear(Year.Value)
+					: unitOfWork.ContributionRepository.GetAll();
 
-                await ExportToCsv(contributions);
-                break;
+				await ExportToCsv(contributions);
+				break;
 
-            default:
-                Console.WriteLine($"Export format '{ExportFormat}' is not supported.");
-                break;
-        }
-    }
+			default:
+				Console.WriteLine($"Export format '{ExportFormat}' is not supported.");
+				break;
+		}
+	}
 
-    private async Task ExportToCsv(IAsyncEnumerable<Contribution> contributions)
-    {
-        string[] labels =
-        [
-            "Luna",
-            "Contribuție brută (lei)",
-            "Comision de administrare (lei)",
-            "Contribuție netă (lei)",
-            "Valoare unitate de fond (lei)",
-            "Număr unități de fond",
-            "Plătită în luna"
-        ];
-        
-        StreamWriter nnTransactionsStreamWriter = fileSystemService.OpenStreamWriter("nn_transactions.csv");
-        StreamWriter nnCashTransactionsStreamWriter =  fileSystemService.OpenStreamWriter("nn_cash_transactions.csv");
-        
-        await using NnTransactionsDocument nnTransactionsDocument = new(nnTransactionsStreamWriter, labels);
-        await using NnCashTransactionsDocument nnCashTransactionsDocument = new(nnCashTransactionsStreamWriter);
+	private async Task ExportToCsv(IAsyncEnumerable<Contribution> contributions)
+	{
+		List<DataLabel> labels = await unitOfWork.DataLabelRepository.GetAll()
+			.ToListAsync();
 
-        await foreach (Contribution contribution in contributions)
-        {
-            await nnTransactionsDocument.WriteAsync(contribution);
-            await nnCashTransactionsDocument.WriteAsync(contribution);
-        }
+		StreamWriter nnTransactionsStreamWriter = fileSystemService.OpenStreamWriter("nn_transactions.csv");
+		StreamWriter nnCashTransactionsStreamWriter = fileSystemService.OpenStreamWriter("nn_cash_transactions.csv");
 
-        Console.WriteLine();
-        Console.WriteLine("Account contributions were exported to CSV files:");
-        Console.WriteLine("  - nn_transactions.csv");
-        Console.WriteLine("  - nn_cash_transactions.csv");
-    }
+		await using NnTransactionsDocument nnTransactionsDocument = new(nnTransactionsStreamWriter, labels);
+		await using NnCashTransactionsDocument nnCashTransactionsDocument = new(nnCashTransactionsStreamWriter);
+
+		await foreach (Contribution contribution in contributions)
+		{
+			await nnTransactionsDocument.WriteAsync(contribution);
+			await nnCashTransactionsDocument.WriteAsync(contribution);
+		}
+
+		Console.WriteLine();
+		Console.WriteLine("Account contributions were exported to CSV files:");
+		Console.WriteLine("  - nn_transactions.csv");
+		Console.WriteLine("  - nn_cash_transactions.csv");
+	}
 }

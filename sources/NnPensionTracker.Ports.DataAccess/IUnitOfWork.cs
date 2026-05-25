@@ -5,6 +5,8 @@ public interface IUnitOfWork
     IContributionRepository ContributionRepository { get; }
 
     IFundNavRepository FundNavRepository { get; }
+    
+    IDataLabelRepository DataLabelRepository { get; }
 
     Task SaveChangesAsync();
 }
