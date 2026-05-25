@@ -206,6 +206,8 @@ internal static class Program
 				fromMonth = fromMonthValue;
 			else if(DateTime.TryParse(fromArgument.Value!, out DateTime fromDate))
 				fromMonth = new MonthDate(fromDate.Year, fromDate.Month);
+			else if(int.TryParse(fromArgument.Value!, out int fromYear))
+				fromMonth = new MonthDate(fromYear, 1);
 			else
 				throw new FormatException("Invalid 'from' month date format. Expected format is MM/yyyy or a valid date.");
 		}
@@ -222,6 +224,8 @@ internal static class Program
 				toMonth = toMonthValue;
 			else if(DateTime.TryParse(toArgument.Value!, out DateTime toDate))
 				toMonth = new MonthDate(toDate.Year, toDate.Month);
+			else if (int.TryParse(toArgument.Value!, out int toYear))
+				toMonth = new MonthDate(toYear, 12);
 			else
 				throw new FormatException("Invalid 'to' month date format. Expected format is MM/yyyy or a valid date.");
 		}
