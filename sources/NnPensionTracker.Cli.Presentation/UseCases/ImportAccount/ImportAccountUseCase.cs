@@ -3,6 +3,7 @@ using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension.Pdf;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
+using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
@@ -40,6 +41,25 @@ public class ImportAccountUseCase : IUseCase
 
 	private void AddColumnNamesToStorage(ContributionsHeader documentHeader)
 	{
+		string[] propertyNames =
+		[
+			nameof(Contribution.Month),
+			nameof(Contribution.GrossValue),
+			nameof(Contribution.AdministrationFee),
+			nameof(Contribution.NetValue),
+			nameof(Contribution.UnitValue),
+			nameof(Contribution.UnitCount),
+			nameof(Contribution.PaidInMonth)
+		];
+
+		for (int i = 0; i < documentHeader.Count && i < propertyNames.Length; i++)
+		{
+			unitOfWork.DataLabelRepository.AddOrUpdate(new DataLabel
+			{
+				Key = $"{nameof(Contribution)}.{propertyNames[i]}",
+				Value = documentHeader[i]
+			});
+		}
 	}
 
 	private DocumentLoadResult ParseDocument(string filePath)

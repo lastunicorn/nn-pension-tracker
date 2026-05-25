@@ -19,4 +19,16 @@ public class DataLabelRepository : IDataLabelRepository
 			await Task.Yield();
 		}
 	}
+
+	public void AddOrUpdate(DataLabel dataLabel)
+	{
+		if (dataLabel == null) throw new ArgumentNullException(nameof(dataLabel));
+
+		DataLabel existing = database.DataLabels.FirstOrDefault(x => x.Key == dataLabel.Key);
+
+		if (existing == null)
+			database.DataLabels.Add(dataLabel);
+		else
+			existing.Value = dataLabel.Value;
+	}
 }

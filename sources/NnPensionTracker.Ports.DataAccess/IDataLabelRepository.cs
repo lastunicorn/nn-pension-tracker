@@ -5,4 +5,6 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 public interface IDataLabelRepository
 {
 	IAsyncEnumerable<DataLabel> GetAll();
+
+	void AddOrUpdate(DataLabel dataLabel);
 }
