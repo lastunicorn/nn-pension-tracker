@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Arguments;
+using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Cli.Presentation;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
@@ -197,14 +198,42 @@ internal static class Program
 			? int.Parse(yearArgument.Value!)
 			: null;
 
-		Argument monthArgument = arguments["month"];
-		int? month = null;
-		if (year.HasValue && monthArgument != null)
-			month = int.Parse(monthArgument.Value!);
+		Argument fromArgument = arguments["from"];
+		MonthDate? fromMonth;
+		if (fromArgument != null)
+		{
+			if(MonthDate.TryParse(fromArgument.Value!, out MonthDate fromMonthValue))
+				fromMonth = fromMonthValue;
+			else if(DateTime.TryParse(fromArgument.Value!, out DateTime fromDate))
+				fromMonth = new MonthDate(fromDate.Year, fromDate.Month);
+			else
+				throw new FormatException("Invalid 'from' month date format. Expected format is MM/yyyy or a valid date.");
+		}
+		else
+		{
+			fromMonth = null;
+		}
+
+		Argument toArgument = arguments["to"];
+		MonthDate? toMonth;
+		if (toArgument != null)
+		{
+			if(MonthDate.TryParse(toArgument.Value!, out MonthDate toMonthValue))
+				toMonth = toMonthValue;
+			else if(DateTime.TryParse(toArgument.Value!, out DateTime toDate))
+				toMonth = new MonthDate(toDate.Year, toDate.Month);
+			else
+				throw new FormatException("Invalid 'to' month date format. Expected format is MM/yyyy or a valid date.");
+		}
+		else
+		{
+			toMonth = null;
+		}
 
 		ShowAccountUseCase useCase = serviceProvider.GetRequiredService<ShowAccountUseCase>();
 		useCase.Year = year;
-		useCase.Month = month;
+		useCase.FromMonth = fromMonth;
+		useCase.ToMonth = toMonth;
 		return useCase;
 	}
 

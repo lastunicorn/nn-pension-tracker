@@ -32,13 +32,25 @@ public class ContributionRepository : IContributionRepository
 		}
 	}
 
-	public async IAsyncEnumerable<Contribution> GetByYearMonth(int year, int? month)
+	public async IAsyncEnumerable<Contribution> GetByMonthDateInterval(MonthDate? fromMonth, MonthDate? toMonth)
 	{
-		IEnumerable<Contribution> contributions = database.Contributions
-			.Where(x => x.Month.Year == year);
+		IEnumerable<Contribution> contributions = database.Contributions;
 
-		if (month.HasValue)
-			contributions = contributions.Where(x => x.Month.Month == month.Value);
+		if (fromMonth.HasValue)
+		{
+			MonthDate from = fromMonth.Value;
+			contributions = contributions.Where(x => 
+				x.Month.Year > from.Year || 
+				(x.Month.Year == from.Year && x.Month.Month >= from.Month));
+		}
+
+		if (toMonth.HasValue)
+		{
+			MonthDate to = toMonth.Value;
+			contributions = contributions.Where(x => 
+				x.Month.Year < to.Year || 
+				(x.Month.Year == to.Year && x.Month.Month <= to.Month));
+		}
 
 		foreach (Contribution contribution in contributions)
 		{

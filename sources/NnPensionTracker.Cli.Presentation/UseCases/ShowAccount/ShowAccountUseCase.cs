@@ -11,7 +11,9 @@ public class ShowAccountUseCase : IUseCase
 
     public int? Year { get; set; }
 
-    public int? Month { get; set; }
+    public MonthDate? FromMonth { get; set; }
+
+    public MonthDate? ToMonth { get; set; }
 
     public ShowAccountUseCase(IUnitOfWork unitOfWork)
     {
@@ -22,17 +24,12 @@ public class ShowAccountUseCase : IUseCase
     {
         IAsyncEnumerable<Contribution> source;
 
-        if (Year.HasValue)
-        {
-            if (Month.HasValue)
-                source = unitOfWork.ContributionRepository.GetByYearMonth(Year.Value, Month.Value);
-            else
-                source = unitOfWork.ContributionRepository.GetByYear(Year.Value);
-        }
+        if (FromMonth.HasValue || ToMonth.HasValue)
+            source = unitOfWork.ContributionRepository.GetByMonthDateInterval(FromMonth, ToMonth);
+        else if (Year.HasValue)
+            source = unitOfWork.ContributionRepository.GetByYear(Year.Value);
         else
-        {
             source = unitOfWork.ContributionRepository.GetAll();
-        }
 
         await DisplayContributions(source);
     }
