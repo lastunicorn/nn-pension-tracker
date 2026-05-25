@@ -9,7 +9,7 @@ public class HelpUseCase : IUseCase
 		Display([
 			new HelpItem
 			{
-				Command = "account [show] [--year <year>] [--from <month>] [--to <month>]",
+				Command = "account [show] [--year <year> | --from <month> --to <month>]",
 				Description =
 				[
 					"Displays the contributions from the current account.",
