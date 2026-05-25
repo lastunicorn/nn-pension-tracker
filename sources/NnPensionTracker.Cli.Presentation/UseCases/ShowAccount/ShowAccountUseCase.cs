@@ -22,7 +22,10 @@ public class ShowAccountUseCase : IUseCase
 
     private async Task DisplayContributions(IAsyncEnumerable<Contribution> contributions)
     {
-        DataGrid dataGrid = new();
+        DataGrid dataGrid = new()
+        {
+            EmptyGridMessage = "No data"
+        };
 
         dataGrid.Columns.Add("Month", HorizontalAlignment.Center);
         dataGrid.Columns.Add("Gross Value", HorizontalAlignment.Right);

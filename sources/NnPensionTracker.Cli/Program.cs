@@ -126,12 +126,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "account")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "account")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "import")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "import")
 			return null;
 
 		Argument fileArgument = arguments["file"] ?? arguments[2];
@@ -145,12 +145,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "account")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "account")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "export")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "export")
 			return null;
 
 		Argument formatArgument = arguments["format"];
@@ -169,12 +169,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "account")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "account")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "clear")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "clear")
 			return null;
 
 		return serviceProvider.GetRequiredService<ClearAccountUseCase>();
@@ -184,12 +184,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "account")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "account")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb != null && verb.Value != "show")
+		if (verb != null && verb.Type == ArgumentType.Ordinal && verb.Value != "show")
 			return null;
 
 		return serviceProvider.GetRequiredService<ShowAccountUseCase>();
@@ -199,12 +199,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "import")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "import")
 			return null;
 
 		Argument sourceArgument = arguments["source"];
@@ -234,12 +234,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "import")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "import")
 			return null;
 
 		Argument sourceArgument = arguments["source"];
@@ -289,12 +289,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "export")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "export")
 			return null;
 
 		Argument fileArgument = arguments["file"];
@@ -317,12 +317,12 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "clear")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "clear")
 			return null;
 
 		return serviceProvider.GetRequiredService<ClearFundUseCase>();
@@ -332,27 +332,46 @@ internal static class Program
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb != null && verb.Value != "show")
+		if (verb != null && verb.Type == ArgumentType.Ordinal && verb.Value != "show")
 			return null;
 
-		return serviceProvider.GetRequiredService<ShowFundUseCase>();
+		Argument yearArgument = arguments["year"];
+		int? year = yearArgument != null
+			? int.Parse(yearArgument.Value!)
+			: null;
+
+		Argument fromArgument = arguments["from"];
+		DateOnly? fromDate = fromArgument != null
+			? DateOnly.Parse(fromArgument.Value!)
+			: null;
+
+		Argument toArgument = arguments["to"];
+		DateOnly? toDate = toArgument != null
+			? DateOnly.Parse(toArgument.Value!)
+			: null;
+
+		ShowFundUseCase useCase = serviceProvider.GetRequiredService<ShowFundUseCase>();
+		useCase.Year = year;
+		useCase.FromDate = fromDate;
+		useCase.ToDate = toDate;
+		return useCase;
 	}
 
 	private static IUseCase TryCreateShowFundFromWebUseCase(Arguments arguments, IServiceProvider serviceProvider)
 	{
 		Argument noun = arguments[0];
 
-		if (noun?.Value != "fund")
+		if (noun == null || noun.Type != ArgumentType.Ordinal || noun.Value != "fund")
 			return null;
 
 		Argument verb = arguments[1];
 
-		if (verb?.Value != "show")
+		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "show")
 			return null;
 
 		Argument sourceArgument = arguments["source"];

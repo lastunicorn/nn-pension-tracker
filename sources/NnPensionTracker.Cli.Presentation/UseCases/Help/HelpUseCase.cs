@@ -35,8 +35,13 @@ public class HelpUseCase : IUseCase
 			},
 			new HelpItem
 			{
-				Command = "fund [show]",
-				Description = "Displays the fund values from the database."
+				Command = "fund [show] [--year <year>] [--from <date>] [--to <date>]",
+				Description =
+				[
+					"Displays the fund values from the database.",
+					"If --year is specified, only values from that year are displayed.",
+					"If --from and/or --to are specified, only values in that interval are displayed."
+				]
 			},
 			new HelpItem
 			{

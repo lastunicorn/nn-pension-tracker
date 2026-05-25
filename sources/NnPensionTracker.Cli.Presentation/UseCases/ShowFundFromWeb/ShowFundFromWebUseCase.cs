@@ -81,7 +81,10 @@ public class ShowFundFromWebUseCase : IUseCase
 
 	private static void DisplayFundRecords(IEnumerable<FundNav> fundNavs)
 	{
-		DataGrid dataGrid = new();
+		DataGrid dataGrid = new()
+		{
+			EmptyGridMessage = "No data"
+		};
 
 		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
 		dataGrid.Columns.Add("Value", HorizontalAlignment.Right);

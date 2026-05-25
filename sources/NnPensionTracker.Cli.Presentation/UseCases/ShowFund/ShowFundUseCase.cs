@@ -9,6 +9,12 @@ public class ShowFundUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;
 
+	public int? Year { get; set; }
+
+	public DateOnly? FromDate { get; set; }
+
+	public DateOnly? ToDate { get; set; }
+
 	public ShowFundUseCase(IUnitOfWork unitOfWork)
 	{
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -18,21 +24,35 @@ public class ShowFundUseCase : IUseCase
 	{
 		List<FundNav> fundRecords = [];
 
-		await foreach (FundNav fundRecord in unitOfWork.FundNavRepository.GetAll())
+		IAsyncEnumerable<FundNav> source;
+
+		if (FromDate.HasValue || ToDate.HasValue)
+			source = unitOfWork.FundNavRepository.GetByDateInterval(FromDate, ToDate);
+		else if (Year.HasValue)
+			source = unitOfWork.FundNavRepository.GetByYear(Year.Value);
+		else
+			source = unitOfWork.FundNavRepository.GetAll();
+
+		await foreach (FundNav fundRecord in source)
 			fundRecords.Add(fundRecord);
 
 		fundRecords = fundRecords
 			.OrderBy(x => x.Date)
 			.ToList();
+		
 		DisplayFundRecords(fundRecords);
 	}
 
 	private void DisplayFundRecords(IEnumerable<FundNav> fundRecords)
 	{
-		DataGrid dataGrid = new();
+		DataGrid dataGrid = new()
+		{
+			EmptyGridMessage = "No data"
+		};
 
 		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
 		dataGrid.Columns.Add("Value", HorizontalAlignment.Right);
+		dataGrid.EmptyGridMessage = "No fund records found.";
 
 		foreach (FundNav fundRecord in fundRecords)
 		{

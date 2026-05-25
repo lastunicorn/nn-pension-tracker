@@ -38,6 +38,23 @@ public class FundNavRepository : IFundNavRepository
 		}
 	}
 
+	public async IAsyncEnumerable<FundNav> GetByDateInterval(DateOnly? fromDate, DateOnly? toDate)
+	{
+		IEnumerable<FundNav> fundNavs = database.FundNavs;
+
+		if (fromDate.HasValue)
+			fundNavs = fundNavs.Where(x => x.Date >= fromDate.Value);
+
+		if (toDate.HasValue)
+			fundNavs = fundNavs.Where(x => x.Date <= toDate.Value);
+
+		foreach (FundNav fundNav in fundNavs)
+		{
+			yield return fundNav;
+			await Task.Yield();
+		}
+	}
+
 	public void Add(FundNav fundNav)
 	{
 		if (fundNav == null) throw new ArgumentNullException(nameof(fundNav));
