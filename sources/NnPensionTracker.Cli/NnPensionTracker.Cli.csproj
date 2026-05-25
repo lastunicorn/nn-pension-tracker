@@ -67,4 +67,9 @@
 		<ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)..\..\LICENSE" Pack="true" PackagePath="" Link="LICENSE"/>
+		<None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="" Link="README.md"/>
+	</ItemGroup>
+
 </Project>
