@@ -8,6 +8,26 @@
 		<RootNamespace>DustInTheWind.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<!-- .deb packaging (Packaging.Targets) -->
+		<!-- PackagePrefix drives: Debian Package: field, /usr/local/bin/ command name, install dir -->
+		<PackagePrefix>nn-pension-tracker</PackagePrefix>
+		<PackageMaintainer>Dust in the Wind &lt;lastunicorn@users.noreply.github.com&gt;</PackageMaintainer>
+		<PackageHomepage>https://github.com/lastunicorn/nn-pension-tracker</PackageHomepage>
+		<!-- Rename the apphost binary to match the package name on linux-x64 so that
+		     Packaging.Targets creates /usr/local/bin/nn-pension-tracker (not the long AssemblyName). -->
+		<AssemblyName Condition="'$(RuntimeIdentifier)' == 'linux-x64'">nn-pension-tracker</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Framework-dependent: net10.0 is not auto-detected by Packaging.Targets; add the runtime dep explicitly -->
+		<DebDotNetDependencies Include="dotnet-runtime-10.0 | dotnet10" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Packaging.Targets" Version="0.1.232" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="ConsoleTools.Arguments" Version="1.0.0" />
 		<PackageReference Include="ConsoleTools.Controls.Tables" Version="1.2.1" />
