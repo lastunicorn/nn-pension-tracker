@@ -39,10 +39,11 @@ internal static class Program
 	{
 		try
 		{
-			ApplyCultureFromAppSettings();
+			await using ServiceProvider serviceProvider = CreateServiceProvider();
+			IConfiguration configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
+			ApplyCultureFromAppSettings(configuration);
 
 			Arguments arguments = new(args);
-			await using ServiceProvider serviceProvider = CreateServiceProvider();
 
 			IUseCase useCase = CreateUseCase(arguments, serviceProvider)
 			                   ?? serviceProvider.GetRequiredService<HelpUseCase>();
@@ -55,43 +56,29 @@ internal static class Program
 		}
 	}
 
-	private static void ApplyCultureFromAppSettings()
+	private static void ApplyCultureFromAppSettings(IConfiguration configuration)
 	{
-		TryReadCultureInfoFromAppSettings(null, out CultureInfo cultureInfo);
-
-		CultureInfo.CurrentCulture = cultureInfo;
-		CultureInfo.CurrentUICulture = cultureInfo;
-		CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+		if (TryReadCultureInfoFromAppSettings(configuration, out CultureInfo cultureInfo))
+		{
+			CultureInfo.CurrentCulture = cultureInfo;
+			CultureInfo.CurrentUICulture = cultureInfo;
+			CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+			CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+		}
 	}
 
-	internal static bool TryReadCultureInfoFromAppSettings(string appSettingsPath, out CultureInfo cultureInfo)
+	private static bool TryReadCultureInfoFromAppSettings(IConfiguration configuration, out CultureInfo cultureInfo)
 	{
-		string filePath = string.IsNullOrWhiteSpace(appSettingsPath)
-			? Path.Combine(AppContext.BaseDirectory, "appsettings.json")
-			: appSettingsPath;
+		string cultureName = configuration["CultureInfo"];
 
-		if (!File.Exists(filePath))
+		if (string.IsNullOrWhiteSpace(cultureName))
 		{
-			cultureInfo = CultureInfo.CurrentCulture;
+			cultureInfo = null;
 			return false;
 		}
 
-		IConfigurationRoot configuration = new ConfigurationBuilder()
-			.SetBasePath(Path.GetDirectoryName(filePath) ?? AppContext.BaseDirectory)
-			.AddJsonFile(Path.GetFileName(filePath), optional: false, reloadOnChange: false)
-			.Build();
-
-		string cultureName = configuration["CultureInfo"];
-
-		if (!string.IsNullOrWhiteSpace(cultureName))
-		{
-			cultureInfo = CultureInfo.GetCultureInfo(cultureName);
-			return true;
-		}
-
-		cultureInfo = CultureInfo.CurrentCulture;
-		return false;
+		cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+		return true;
 	}
 
 	private static ServiceProvider CreateServiceProvider()
@@ -202,11 +189,11 @@ internal static class Program
 		MonthDate? fromMonth;
 		if (fromArgument != null)
 		{
-			if(MonthDate.TryParse(fromArgument.Value!, out MonthDate fromMonthValue))
+			if (MonthDate.TryParse(fromArgument.Value!, out MonthDate fromMonthValue))
 				fromMonth = fromMonthValue;
-			else if(DateTime.TryParse(fromArgument.Value!, out DateTime fromDate))
+			else if (DateTime.TryParse(fromArgument.Value!, out DateTime fromDate))
 				fromMonth = new MonthDate(fromDate.Year, fromDate.Month);
-			else if(int.TryParse(fromArgument.Value!, out int fromYear))
+			else if (int.TryParse(fromArgument.Value!, out int fromYear))
 				fromMonth = new MonthDate(fromYear, 1);
 			else
 				throw new FormatException("Invalid 'from' month date format. Expected format is MM/yyyy or a valid date.");
@@ -220,9 +207,9 @@ internal static class Program
 		MonthDate? toMonth;
 		if (toArgument != null)
 		{
-			if(MonthDate.TryParse(toArgument.Value!, out MonthDate toMonthValue))
+			if (MonthDate.TryParse(toArgument.Value!, out MonthDate toMonthValue))
 				toMonth = toMonthValue;
-			else if(DateTime.TryParse(toArgument.Value!, out DateTime toDate))
+			else if (DateTime.TryParse(toArgument.Value!, out DateTime toDate))
 				toMonth = new MonthDate(toDate.Year, toDate.Month);
 			else if (int.TryParse(toArgument.Value!, out int toYear))
 				toMonth = new MonthDate(toYear, 12);

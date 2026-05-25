@@ -11,6 +11,7 @@ using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFundFromWeb;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NnPensionTracker.Ports.FileSystemAccess;
 
@@ -25,6 +26,34 @@ internal static class Setup
 			Database database = new();
 			database.OpenAsync().GetAwaiter().GetResult();
 			return database;
+		});
+
+		services.AddSingleton(_ =>
+		{
+			IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
+				.AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: true, reloadOnChange: false);
+
+			if (OperatingSystem.IsLinux())
+			{
+				// system config
+				configurationBuilder.AddJsonFile(Path.Combine("/etc/nn-pension-tracker", "appsettings.json"), optional: true, reloadOnChange: false);
+
+				// user config
+				string userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/nn-pension-tracker", "appsettings.json");
+				configurationBuilder.AddJsonFile(userConfigPath, optional: true, reloadOnChange: false);
+			}
+
+			if (OperatingSystem.IsWindows())
+			{
+				// system config
+				// tbd
+				
+				// user config
+				string applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				configurationBuilder.AddJsonFile(Path.Combine(applicationDataPath, "appsettings.json"), optional: true, reloadOnChange: false);
+			}
+
+			return configurationBuilder.Build();
 		});
 
 		services.AddScoped<IUnitOfWork, UnitOfWork>();

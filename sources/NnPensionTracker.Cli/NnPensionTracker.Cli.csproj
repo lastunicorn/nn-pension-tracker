@@ -43,9 +43,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="appsettings.json">
+		<!-- Remove from the SDK's implicit None glob so we can re-declare it as Content below. -->
+		<None Remove="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+		  Local dev / Windows: copy next to the binary as usual (CopyToOutputDirectory).
+		  deb package (linux-x64): the LinuxPath metadata tells Packaging.Targets to
+		  install the file to /etc/nn-pension-tracker/ instead of /usr/share/nn-pension-tracker/.
+		-->
+		<Content Include="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<LinuxPath>/etc/nn-pension-tracker/appsettings.json</LinuxPath>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
