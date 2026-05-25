@@ -20,8 +20,15 @@ public class FundRecordPersister : IEntityPersister<FundNav>
 		if (!File.Exists(filePath))
 			return [];
 
-		string json = await File.ReadAllTextAsync(filePath);
-		return JsonSerializer.Deserialize<List<FundNav>>(json, jsonSerializerOptions) ?? [];
+		try
+		{
+			string json = await File.ReadAllTextAsync(filePath);
+			return JsonSerializer.Deserialize<List<FundNav>>(json, jsonSerializerOptions) ?? [];
+		}
+		catch (Exception ex)
+		{
+			throw new DataAccessException($"Failed to load fund records from file: {filePath}", ex);
+		}
 	}
 
 	public Task SaveAsync(IEnumerable<FundNav> fundRecords)
@@ -30,7 +37,15 @@ public class FundRecordPersister : IEntityPersister<FundNav>
 			Directory.CreateDirectory(DatabasePath);
 
 		string filePath = Path.Combine(DatabasePath, FileName);
-		string json = JsonSerializer.Serialize(fundRecords, jsonSerializerOptions);
-		return File.WriteAllTextAsync(filePath, json);
+
+		try
+		{
+			string json = JsonSerializer.Serialize(fundRecords, jsonSerializerOptions);
+			return File.WriteAllTextAsync(filePath, json);
+		}
+		catch (Exception ex)
+		{
+			throw new DataAccessException($"Failed to save fund records to file: {filePath}", ex);
+		}
 	}
 }

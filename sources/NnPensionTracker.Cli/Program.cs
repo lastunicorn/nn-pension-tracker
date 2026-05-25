@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Arguments;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ClearFund;
@@ -10,6 +11,7 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
+using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFundFromWeb;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,15 +35,22 @@ internal static class Program
 {
 	internal static async Task Main(string[] args)
 	{
-		ApplyCultureFromAppSettings();
+		try
+		{
+			ApplyCultureFromAppSettings();
 
-		Arguments arguments = new(args);
-		await using ServiceProvider serviceProvider = CreateServiceProvider();
+			Arguments arguments = new(args);
+			await using ServiceProvider serviceProvider = CreateServiceProvider();
 
-		IUseCase useCase = CreateUseCase(arguments, serviceProvider)
-			?? serviceProvider.GetRequiredService<HelpUseCase>();
-		
-		await useCase.Execute();
+			IUseCase useCase = CreateUseCase(arguments, serviceProvider)
+			                   ?? serviceProvider.GetRequiredService<HelpUseCase>();
+
+			await useCase.Execute();
+		}
+		catch (Exception ex)
+		{
+			CustomConsole.WriteLineError(ex);
+		}
 	}
 
 	private static void ApplyCultureFromAppSettings()
@@ -52,6 +61,35 @@ internal static class Program
 		CultureInfo.CurrentUICulture = cultureInfo;
 		CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 		CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+	}
+
+	internal static bool TryReadCultureInfoFromAppSettings(string appSettingsPath, out CultureInfo cultureInfo)
+	{
+		string filePath = string.IsNullOrWhiteSpace(appSettingsPath)
+			? Path.Combine(AppContext.BaseDirectory, "appsettings.json")
+			: appSettingsPath;
+
+		if (!File.Exists(filePath))
+		{
+			cultureInfo = CultureInfo.CurrentCulture;
+			return false;
+		}
+
+		IConfigurationRoot configuration = new ConfigurationBuilder()
+			.SetBasePath(Path.GetDirectoryName(filePath) ?? AppContext.BaseDirectory)
+			.AddJsonFile(Path.GetFileName(filePath), optional: false, reloadOnChange: false)
+			.Build();
+
+		string cultureName = configuration["CultureInfo"];
+
+		if (!string.IsNullOrWhiteSpace(cultureName))
+		{
+			cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+			return true;
+		}
+
+		cultureInfo = CultureInfo.CurrentCulture;
+		return false;
 	}
 
 	private static ServiceProvider CreateServiceProvider()
@@ -76,6 +114,7 @@ internal static class Program
 		       ?? TryCreateShowAccountUseCase(arguments, serviceProvider)
 		       ?? TryCreateImportFundFromFileUseCase(arguments, serviceProvider)
 		       ?? TryCreateImportFundFromWebUseCase(arguments, serviceProvider)
+		       ?? TryCreateShowFundFromWebUseCase(arguments, serviceProvider)
 		       ?? TryCreateExportFundUseCase(arguments, serviceProvider)
 		       ?? TryCreateClearFundUseCase(arguments, serviceProvider)
 		       ?? TryCreateShowFundUseCase(arguments, serviceProvider)
@@ -303,37 +342,47 @@ internal static class Program
 		return serviceProvider.GetRequiredService<ShowFundUseCase>();
 	}
 
+	private static IUseCase TryCreateShowFundFromWebUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	{
+		Argument noun = arguments[0];
+
+		if (noun?.Value != "fund")
+			return null;
+
+		Argument verb = arguments[1];
+
+		if (verb?.Value != "show")
+			return null;
+
+		Argument sourceArgument = arguments["source"];
+
+		if (sourceArgument == null || (sourceArgument.Value != "nn-api" && sourceArgument.Value != "web"))
+			return null;
+
+		Argument yearArgument = arguments["year"];
+		int? year = yearArgument != null
+			? int.Parse(yearArgument.Value!)
+			: null;
+
+		Argument fromArgument = arguments["from"];
+		DateOnly? fromDate = fromArgument != null
+			? DateOnly.Parse(fromArgument.Value!)
+			: null;
+
+		Argument toArgument = arguments["to"];
+		DateOnly? toDate = toArgument != null
+			? DateOnly.Parse(toArgument.Value!)
+			: null;
+
+		ShowFundFromWebUseCase useCase = serviceProvider.GetRequiredService<ShowFundFromWebUseCase>();
+		useCase.Year = year;
+		useCase.FromDate = fromDate;
+		useCase.ToDate = toDate;
+		return useCase;
+	}
+
 	private static IUseCase TryCreateHelpUseCase(IServiceProvider serviceProvider)
 	{
 		return serviceProvider.GetRequiredService<HelpUseCase>();
-	}
-
-	internal static bool TryReadCultureInfoFromAppSettings(string appSettingsPath, out CultureInfo cultureInfo)
-	{
-		string filePath = string.IsNullOrWhiteSpace(appSettingsPath)
-			? Path.Combine(AppContext.BaseDirectory, "appsettings.json")
-			: appSettingsPath;
-
-		if (!File.Exists(filePath))
-		{
-			cultureInfo = CultureInfo.CurrentCulture;
-			return false;
-		}
-
-		IConfigurationRoot configuration = new ConfigurationBuilder()
-			.SetBasePath(Path.GetDirectoryName(filePath) ?? AppContext.BaseDirectory)
-			.AddJsonFile(Path.GetFileName(filePath), optional: false, reloadOnChange: false)
-			.Build();
-
-		string cultureName = configuration["CultureInfo"];
-		
-		if (!string.IsNullOrWhiteSpace(cultureName))
-		{
-			cultureInfo = CultureInfo.GetCultureInfo(cultureName);
-			return true;
-		}
-
-		cultureInfo = CultureInfo.CurrentCulture;
-		return false;
 	}
 }

@@ -21,8 +21,15 @@ public class ContributionPersister : IEntityPersister<Contribution>
 		if (!File.Exists(filePath))
 			return [];
 
-		string json = await File.ReadAllTextAsync(filePath);
-		return JsonSerializer.Deserialize<List<Contribution>>(json, jsonSerializerOptions) ?? [];
+		try
+		{
+			string json = await File.ReadAllTextAsync(filePath);
+			return JsonSerializer.Deserialize<List<Contribution>>(json, jsonSerializerOptions) ?? [];
+		}
+		catch (Exception ex)
+		{
+			throw new DataAccessException($"Failed to load contributions from file: {filePath}", ex);
+		}
 	}
 
 	public Task SaveAsync(IEnumerable<Contribution> contributions)
@@ -31,7 +38,15 @@ public class ContributionPersister : IEntityPersister<Contribution>
 			Directory.CreateDirectory(DatabasePath);
 
 		string filePath = Path.Combine(DatabasePath, FileName);
-		string json = JsonSerializer.Serialize(contributions, jsonSerializerOptions);
-		return File.WriteAllTextAsync(filePath, json);
+
+		try
+		{
+			string json = JsonSerializer.Serialize(contributions, jsonSerializerOptions);
+			return File.WriteAllTextAsync(filePath, json);
+		}
+		catch (Exception ex)
+		{
+			throw new DataAccessException($"Failed to save contributions to file: {filePath}", ex);
+		}
 	}
 }

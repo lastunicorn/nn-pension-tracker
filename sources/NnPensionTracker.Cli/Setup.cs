@@ -9,6 +9,7 @@ using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
+using DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFundFromWeb;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 using NnPensionTracker.Ports.FileSystemAccess;
@@ -39,6 +40,7 @@ internal static class Setup
 		services.AddTransient<ExportFundUseCase>();
 		services.AddTransient<ClearFundUseCase>();
 		services.AddTransient<ShowFundUseCase>();
+		services.AddTransient<ShowFundFromWebUseCase>();
 		services.AddTransient<HelpUseCase>();
 	}
 }

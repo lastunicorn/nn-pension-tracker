@@ -8,7 +8,7 @@ public interface IFundNavRepository
 	
 	IAsyncEnumerable<FundNav> GetByYear(int year);
 	
-	Task<FundNav> GetAsync(DateTime date);
+	Task<FundNav> GetAsync(DateOnly date);
 	
 	void Add(FundNav fundNav);
 	

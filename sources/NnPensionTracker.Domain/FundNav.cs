@@ -5,7 +5,7 @@ namespace DustInTheWind.NnPensionTracker.Domain;
 /// </summary>
 public record FundNav
 {
-	public DateTime Date { get; set; }
+	public DateOnly Date { get; set; }
 
 	public decimal Value { get; set; }
 }

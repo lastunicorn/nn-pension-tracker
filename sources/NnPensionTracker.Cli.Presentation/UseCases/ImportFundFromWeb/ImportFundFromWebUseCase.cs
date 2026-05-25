@@ -10,7 +10,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
 /// <summary>
 /// Imports fund values from the NN API.
 /// </summary>
-internal class ImportFundFromWebUseCase : IUseCase
+public class ImportFundFromWebUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly INnApiClient nnApiClient;
@@ -35,14 +35,14 @@ internal class ImportFundFromWebUseCase : IUseCase
 	{
 		ValidateDateInterval();
 
-		IEnumerable<FundNav> fundNavs = await ReadFromNnApi();
+		GraphData graphData = await ReadFromNnApi();
 
-		ImportDiagnostics importDiagnostics = await AddToStorage(fundNavs);
-		DisplayImportDiagnostics($"Fund NAV values for {Year}", importDiagnostics);
+		ImportDiagnostics importDiagnostics = await AddToStorage(graphData);
+		DisplayImportDiagnostics(importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
 	}
-	
+
 	private void ValidateDateInterval()
 	{
 		if (Year == null && FromDate == null && ToDate == null)
@@ -52,7 +52,7 @@ internal class ImportFundFromWebUseCase : IUseCase
 			throw new Exception("Please specify either 'year' or the 'from'/'to' interval, not both.");
 	}
 
-	private async Task<IEnumerable<FundNav>> ReadFromNnApi()
+	private async Task<GraphData> ReadFromNnApi()
 	{
 		DateOnly fromDate = Year != null
 			? new DateOnly(Year.Value, 1, 1)
@@ -64,49 +64,47 @@ internal class ImportFundFromWebUseCase : IUseCase
 
 		int numberOfPoints = toDate.DayNumber - fromDate.DayNumber + 1;
 
-		Console.WriteLine($"Reading fund NAV values from {fromDate} to {toDate} ({numberOfPoints} points)");
+		Console.WriteLine($"Reading Romanian NN Mandatory Pension values.");
+		Console.WriteLine($"From {fromDate} to {toDate} ({numberOfPoints} points)");
 
-		GraphData graphData = await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
-
-		return graphData.Points
-			.Select(x => new FundNav
-			{
-				Date = x.Date,
-				Value = x.Value
-			});
+		return await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
 	}
 
-	private async Task<ImportDiagnostics> AddToStorage(IEnumerable<FundNav> fundNavs)
+	private async Task<ImportDiagnostics> AddToStorage(GraphData graphData)
 	{
 		ImportDiagnostics importDiagnostics = new();
 
 		try
 		{
-			foreach (FundNav fundNav in fundNavs)
+			foreach (NnGraphPoint nnGraphPoint in graphData.Points)
 			{
-				FundNav existingFundNav = await unitOfWork.FundNavRepository.GetAsync(fundNav.Date);
+				FundNav existingFundNav = await unitOfWork.FundNavRepository.GetAsync(DateOnly.FromDateTime(nnGraphPoint.Date));
 
 				if (existingFundNav == null)
 				{
 					if (VerboseLogging)
-						CustomConsole.WriteLine($"[{fundNav.Date} - {fundNav.Value}] Adding fund NAV value.");
+						CustomConsole.WriteLine($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Adding fund NAV value.");
 
-					unitOfWork.FundNavRepository.Add(fundNav);
+					unitOfWork.FundNavRepository.Add(new FundNav
+					{
+						Date = DateOnly.FromDateTime(nnGraphPoint.Date),
+						Value = nnGraphPoint.Value
+					});
 					importDiagnostics.AddCount++;
 				}
-				else if (existingFundNav.Value == fundNav.Value)
+				else if (existingFundNav.Value == nnGraphPoint.Value)
 				{
 					if (VerboseLogging)
-						CustomConsole.WriteLineWarning($"[{fundNav.Date} - {fundNav.Value}] Duplicate fund NAV value. Skipping.");
+						CustomConsole.WriteLineWarning($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Duplicate fund NAV value. Skipping.");
 
 					importDiagnostics.SkipCount++;
 				}
 				else
 				{
 					if (VerboseLogging)
-						CustomConsole.WriteLineWarning($"[{fundNav.Date} - {fundNav.Value}] Fund NAV value already exists: [{existingFundNav.Date} - {existingFundNav.Value}]");
+						CustomConsole.WriteLineWarning($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Fund NAV value already exists: [{existingFundNav.Date} - {existingFundNav.Value}]");
 
-					existingFundNav.Value = fundNav.Value;
+					existingFundNav.Value = nnGraphPoint.Value;
 					importDiagnostics.UpdateCount++;
 				}
 			}
@@ -119,11 +117,10 @@ internal class ImportFundFromWebUseCase : IUseCase
 		return importDiagnostics;
 	}
 
-	private void DisplayImportDiagnostics(string title, ImportDiagnostics importDiagnostics)
+	private void DisplayImportDiagnostics(ImportDiagnostics importDiagnostics)
 	{
 		DataGrid diagnosticsGrid = new()
 		{
-			Title = title,
 			Margin = new Thickness(0, 1, 0, 1)
 		};
 

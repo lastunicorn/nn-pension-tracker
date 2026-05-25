@@ -5,7 +5,7 @@ using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ShowAccount;
 
-internal class ShowAccountUseCase : IUseCase
+public class ShowAccountUseCase : IUseCase
 {
     private readonly IUnitOfWork unitOfWork;
 

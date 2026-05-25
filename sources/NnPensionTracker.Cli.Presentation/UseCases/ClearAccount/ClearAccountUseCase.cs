@@ -2,7 +2,7 @@ using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
 
-internal class ClearAccountUseCase : IUseCase
+public class ClearAccountUseCase : IUseCase
 {
     private readonly IUnitOfWork unitOfWork;
 

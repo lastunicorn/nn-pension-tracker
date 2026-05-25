@@ -11,7 +11,7 @@ public class FundNavRepository : IFundNavRepository
 		this.database = database ?? throw new ArgumentNullException(nameof(database));
 	}
 
-	public Task<FundNav> GetAsync(DateTime date)
+	public Task<FundNav> GetAsync(DateOnly date)
 	{
 		FundNav fundNav = database.FundNavs.FirstOrDefault(x => x.Date == date);
 		return Task.FromResult(fundNav);

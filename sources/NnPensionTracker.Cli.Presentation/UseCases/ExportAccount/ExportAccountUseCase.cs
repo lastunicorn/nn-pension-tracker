@@ -9,7 +9,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
 /// nn_transactions.csv -> "Security Name,Ticker Symbol,Date,Time,Value,Shares,Type,Fees,Note"
 /// nn_cash_transactions.csv -> "Type,Cash Account,Date,Time,Value,Note"
 /// </summary>
-internal class ExportAccountUseCase : IUseCase
+public class ExportAccountUseCase : IUseCase
 {
     private readonly IUnitOfWork unitOfWork;
     private readonly IFileSystemService fileSystemService;

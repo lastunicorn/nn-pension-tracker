@@ -1,6 +1,6 @@
 namespace DustInTheWind.NnPensionTracker.Cli;
 
-internal interface IUseCase
+public interface IUseCase
 {
     Task Execute();
 }

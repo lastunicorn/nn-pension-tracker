@@ -40,6 +40,15 @@ public class HelpUseCase : IUseCase
 			},
 			new HelpItem
 			{
+				Command = "fund show --source web [--year <year> | --from <date> --to <date>]",
+				Description =
+				[
+					"Displays fund values from NN's website without importing them into the database.",
+					"When no date interval is specified, it displays values from the current year."
+				]
+			},
+			new HelpItem
+			{
 				Command = "fund import [--source web] --from <date> --to <date>",
 				Description =
 				[

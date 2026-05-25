@@ -11,7 +11,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportAccount;
 /// Imports contributions from a PDF file.
 /// The PDF file must be a Mandatory Private Pension contributions document downloaded from NN Direct mobile app.
 /// </summary>
-internal class ImportAccountUseCase : IUseCase
+public class ImportAccountUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;
 

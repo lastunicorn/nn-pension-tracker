@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AssemblyName>DustInTheWind.$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>DustInTheWind.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ConsoleTools.Controls.Tables" Version="1.2.1" />
+		<PackageReference Include="CsvHelper" Version="33.1.0" />
+		<PackageReference Include="DustInTheWind.NN.Toolkit" Version="1.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="NnPensionTracker.Cli.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" />
+	  <ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" />
+	</ItemGroup>
+
+</Project>

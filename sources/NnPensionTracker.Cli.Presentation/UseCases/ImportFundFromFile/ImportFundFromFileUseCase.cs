@@ -16,7 +16,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
 ///     - "Date": date
 ///     - "Quote": number
 /// </summary>
-internal class ImportFundFromFileUseCase : IUseCase
+public class ImportFundFromFileUseCase : IUseCase
 {
     public string FilePath { get; set; }
 

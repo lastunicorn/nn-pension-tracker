@@ -13,7 +13,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportFund;
 ///     - "Date": date
 ///     - "Quote": number
 /// </summary>
-internal class ExportFundUseCase : IUseCase
+public class ExportFundUseCase : IUseCase
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly IFileSystemService fileSystemService;
