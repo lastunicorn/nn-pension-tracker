@@ -30,28 +30,31 @@ internal static class Setup
 
 		services.AddSingleton(_ =>
 		{
-			IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
-				.AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: true, reloadOnChange: false);
+			const string appDirectoryName = "nn-pension-tracker";
+			const string appsettingsFileName = "appsettings.json";
+
+			ConfigurationBuilder configurationBuilder = new();
+
+			// Local config
+			configurationBuilder.AddJsonFile(Path.Combine(AppContext.BaseDirectory, appsettingsFileName), optional: true, reloadOnChange: false);
 
 			if (OperatingSystem.IsLinux())
 			{
 				// system config
-				configurationBuilder.AddJsonFile(Path.Combine("/etc/nn-pension-tracker", "appsettings.json"), optional: true, reloadOnChange: false);
-
-				// user config
-				string userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/nn-pension-tracker", "appsettings.json");
-				configurationBuilder.AddJsonFile(userConfigPath, optional: true, reloadOnChange: false);
+				string systemConfigDirectoryPath = Path.Combine("/etc", appDirectoryName);
+				configurationBuilder.AddJsonFile(Path.Combine(systemConfigDirectoryPath, appsettingsFileName), optional: true, reloadOnChange: false);
 			}
 
 			if (OperatingSystem.IsWindows())
 			{
 				// system config
-				// tbd
-				
-				// user config
-				string applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-				configurationBuilder.AddJsonFile(Path.Combine(applicationDataPath, "appsettings.json"), optional: true, reloadOnChange: false);
+				string commonApplicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				configurationBuilder.AddJsonFile(Path.Combine(commonApplicationDataPath, appDirectoryName, appsettingsFileName), optional: true, reloadOnChange: false);
 			}
+
+			// user config (~/.config on Linux; %APPDATA% on Windows)
+			string userConfigDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+			configurationBuilder.AddJsonFile(Path.Combine(userConfigDirectoryPath, appDirectoryName, appsettingsFileName), optional: true, reloadOnChange: false);
 
 			return configurationBuilder.Build();
 		});
