@@ -57,6 +57,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<LinuxPath>/etc/nn-pension-tracker/appsettings.json</LinuxPath>
+			<IsConfigFile>true</IsConfigFile>
 		</Content>
 	</ItemGroup>
 

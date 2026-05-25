@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Reflection;
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Arguments;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
@@ -39,6 +40,9 @@ internal static class Program
 	{
 		try
 		{
+			Version version = Assembly.GetEntryAssembly()?.GetName().Version;
+			CustomConsole.WriteLine($"NN Pension Tracker CLI {version?.ToString(3)}");
+
 			await using ServiceProvider serviceProvider = CreateServiceProvider();
 			IConfiguration configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 			ApplyCultureFromAppSettings(configuration);
