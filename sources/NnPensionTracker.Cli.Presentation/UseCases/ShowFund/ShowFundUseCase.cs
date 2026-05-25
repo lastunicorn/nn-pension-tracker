@@ -3,7 +3,7 @@ using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ShowFund;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
 
 public class ShowFundUseCase : IUseCase
 {

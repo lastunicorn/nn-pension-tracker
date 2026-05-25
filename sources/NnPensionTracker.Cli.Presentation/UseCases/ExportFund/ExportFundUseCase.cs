@@ -5,7 +5,7 @@ using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportFund;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportFund;
 
 /// <summary>
 /// Exports fund NAV values to a CSV file.

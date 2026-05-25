@@ -8,7 +8,7 @@ using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromFile;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromFile;
 
 /// <summary>
 /// Imports fund values from a CSV file.

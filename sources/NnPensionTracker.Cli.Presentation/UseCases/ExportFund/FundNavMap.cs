@@ -1,7 +1,7 @@
 using CsvHelper.Configuration;
 using DustInTheWind.NnPensionTracker.Domain;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportFund;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportFund;
 
 internal class FundNavMap : ClassMap<FundNav>
 {

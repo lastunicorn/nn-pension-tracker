@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportAccount;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
 
 internal class ImportDiagnostics
 {

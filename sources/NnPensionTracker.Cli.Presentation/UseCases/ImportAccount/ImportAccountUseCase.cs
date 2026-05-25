@@ -2,10 +2,10 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension.Pdf;
-using DustInTheWind.NnPensionTracker.Cli.ConsoleUtils;
+using DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportAccount;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
 
 /// <summary>
 /// Imports contributions from a PDF file.

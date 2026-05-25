@@ -3,7 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
 
 internal sealed class NnTransactionsDocument : IDisposable, IAsyncDisposable
 {

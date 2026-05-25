@@ -1,6 +1,6 @@
-using DustInTheWind.NnPensionTracker.Cli.ConsoleUtils;
+using DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.Help;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.Help;
 
 public class HelpUseCase : IUseCase
 {

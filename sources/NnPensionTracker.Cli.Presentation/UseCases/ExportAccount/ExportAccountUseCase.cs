@@ -2,7 +2,7 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using NnPensionTracker.Ports.FileSystemAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ExportAccount;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
 
 /// <summary>
 /// Exports contributions to CSV files in the format required by Portfolio Performance application.

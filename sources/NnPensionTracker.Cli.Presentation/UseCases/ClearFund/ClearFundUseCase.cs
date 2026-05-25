@@ -1,7 +1,7 @@
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ClearFund;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
 
 public class ClearFundUseCase : IUseCase
 {

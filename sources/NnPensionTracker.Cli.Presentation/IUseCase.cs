@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation;
 
 public interface IUseCase
 {

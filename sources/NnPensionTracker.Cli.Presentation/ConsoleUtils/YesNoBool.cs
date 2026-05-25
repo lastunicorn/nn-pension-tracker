@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli.ConsoleUtils;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
 
 internal readonly record struct YesNoBool
 {

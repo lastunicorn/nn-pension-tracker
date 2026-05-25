@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.Help;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.Help;
 
 internal class HelpItemDescription : Collection<string>
 {

@@ -1,6 +1,6 @@
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ClearAccount;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
 
 public class ClearAccountUseCase : IUseCase
 {

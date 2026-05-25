@@ -1,6 +1,6 @@
 using DustInTheWind.ConsoleTools;
 
-namespace DustInTheWind.NnPensionTracker.Cli.ConsoleUtils;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
 
 internal class XConsole
 {

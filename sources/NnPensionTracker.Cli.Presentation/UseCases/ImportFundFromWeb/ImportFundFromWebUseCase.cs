@@ -5,7 +5,7 @@ using DustInTheWind.NN.Toolkit.ApiAccess;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Cli.UseCases.ImportFundFromWeb;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromWeb;
 
 /// <summary>
 /// Imports fund values from the NN API.
