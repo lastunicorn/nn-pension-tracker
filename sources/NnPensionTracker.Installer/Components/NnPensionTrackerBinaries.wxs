@@ -1,9 +1,10 @@
+<?define BinariesDir = "$(sys.SOURCEFILEDIR)..\obj\BinariesStaging\" ?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 	<Fragment>
 
 		<!-- All binaries from the CLI self-contained win-x64 publish output -->
 		<ComponentGroup Id="NnPensionTrackerBinaries" Directory="INSTALLFOLDER">
-			<Files Include="$(var.NnPensionTracker.Cli.TargetDir)**\*.*" />
+			<Files Include="$(var.BinariesDir)**\*" />
 		</ComponentGroup>
 
 	</Fragment>

@@ -5,7 +5,7 @@
 			<Directory Id="INSTALLFOLDER" Name="NN Pension Tracker" />
 		</StandardDirectory>
 		
-		<StandardDirectory Id="AppDataFolder">
+		<StandardDirectory Id="CommonAppDataFolder">
 			<Directory Id="APPDATAFOLDER" Name="NN Pension Tracker" />
 		</StandardDirectory>
 		
