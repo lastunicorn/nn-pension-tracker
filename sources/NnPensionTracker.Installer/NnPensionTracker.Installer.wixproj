@@ -1,33 +1,12 @@
-﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+﻿<Project Sdk="WixToolset.Sdk/5.0.2" InitialTargets="PublishCli">
 
 	<PropertyGroup>
 		<Configurations>Debug;Release;Release plus Install</Configurations>
-		<BinariesDir>$(MSBuildThisFileDirectory)obj\BinariesStaging\</BinariesDir>
-		<CliTargetDir>$(MSBuildThisFileDirectory)..\NnPensionTracker.Cli\bin\$(Configuration)\net10.0\win-x64\</CliTargetDir>
+		<DefineConstants>BinariesDir=$(SolutionRoot)publish\win-x64\;ProductVersion=$(Version)</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\NnPensionTracker.Cli\NnPensionTracker.Cli.csproj">
-			<AdditionalProperties>RuntimeIdentifier=win-x64;SelfContained=true</AdditionalProperties>
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-		</ProjectReference>
-	</ItemGroup>
-
-	<Target Name="StageBinaries" BeforeTargets="HarvestFiles;Build">
-
-		<ItemGroup>
-			<BinariesToStage
-				Include="$(CliTargetDir)**\*"
-				Exclude="$(CliTargetDir)appsettings.json" />
-		</ItemGroup>
-
-		<MakeDir Directories="$(BinariesDir)" />
-
-		<Copy
-			SourceFiles="@(BinariesToStage)"
-			DestinationFolder="$(BinariesDir)%(RecursiveDir)"
-			SkipUnchangedFiles="true" />
-
+	<Target Name="PublishCli">
+		<Exec Command="dotnet publish $(MSBuildThisFileDirectory)..\NnPensionTracker.Cli\NnPensionTracker.Cli.csproj /p:PublishProfile=win-x64" />
 	</Target>
 
 </Project>
