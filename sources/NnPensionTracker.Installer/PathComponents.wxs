@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+
+		<!-- Appends the install directory to the system PATH -->
+		<ComponentGroup Id="PathComponents" Directory="INSTALLFOLDER">
+			<Component Guid="A3C5E7B9-1D2F-4A6C-8E0B-3F5D7A9C1E0B">
+
+				<RegistryValue
+					Root="HKLM"
+					Key="SOFTWARE\NN Pension Tracker"
+					Name="Installed"
+					Type="integer"
+					Value="1"
+					KeyPath="yes" />
+
+				<Environment
+					Id="PATH"
+					Name="PATH"
+					Value="[INSTALLFOLDER]"
+					Action="set"
+					Part="last"
+					Permanent="no"
+					System="yes" />
+
+			</Component>
+		</ComponentGroup>
+
+	</Fragment>
+</Wix>

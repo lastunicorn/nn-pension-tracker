@@ -1,0 +1,13 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+		
+		<StandardDirectory Id="ProgramFiles6432Folder">
+			<Directory Id="INSTALLFOLDER" Name="NN Pension Tracker" />
+		</StandardDirectory>
+		
+		<StandardDirectory Id="AppDataFolder">
+			<Directory Id="APPDATAFOLDER" Name="NN Pension Tracker" />
+		</StandardDirectory>
+		
+	</Fragment>
+</Wix>

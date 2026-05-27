@@ -1,0 +1,11 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <Configurations>Debug;Release;Release plus Install</Configurations>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NnPensionTracker.Cli\NnPensionTracker.Cli.csproj">
+      <AdditionalProperties>RuntimeIdentifier=win-x64;SelfContained=true</AdditionalProperties>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

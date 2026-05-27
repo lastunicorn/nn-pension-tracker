@@ -1,0 +1,18 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package
+		Name="NnPensionTracker"
+		Manufacturer="Dust in the Wind"
+		Version="1.0.0"
+		UpgradeCode="2F8E1A3C-7B4D-4F9A-B5C6-E8D3A21F0C7B"
+		Scope="perMachine">
+		
+		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+		<Feature Id="Main">
+			<ComponentGroupRef Id="NnPensionTrackerBinaries" />
+			<ComponentGroupRef Id="AppSettingsComponents" />
+			<ComponentGroupRef Id="PathComponents" />
+		</Feature>
+		
+	</Package>
+</Wix>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NnPensionTracker.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "account import contributions.pdf"
+    }
+  }
+}

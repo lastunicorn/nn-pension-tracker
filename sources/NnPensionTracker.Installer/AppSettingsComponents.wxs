@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+
+		<!-- Deploys the default appsettings.json to %APPDATA%\NN Pension Tracker\ -->
+		<ComponentGroup Id="AppSettingsComponents" Directory="APPDATAFOLDER">
+			<Component NeverOverwrite="yes" Guid="F1E2D3C4-B5A6-4789-9012-A1B2C3D4E5F6">
+
+				<RegistryValue
+					Root="HKCU"
+					Key="SOFTWARE\NN Pension Tracker"
+					Name="ConfigInstalled"
+					Type="integer"
+					Value="1"
+					KeyPath="yes" />
+
+				<File Source="..\NnPensionTracker.Cli\appsettings.json" />
+				<RemoveFolder Id="RemoveAppDataFolder" Directory="APPDATAFOLDER" On="uninstall" />
+			</Component>
+		</ComponentGroup>
+
+	</Fragment>
+</Wix>

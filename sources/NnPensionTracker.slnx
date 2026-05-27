@@ -1,4 +1,11 @@
 <Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Release plus Install" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/Common/">
     <File Path="build-deb.sh" />
     <File Path="Directory.Build.props" />
@@ -11,4 +18,9 @@
   <Project Path="NnPensionTracker.Cli.Tests\NnPensionTracker.Cli.Tests.csproj" />
   <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />
   <Project Path="NnPensionTracker.Domain/NnPensionTracker.Domain.csproj" />
+  <Project Path="NnPensionTracker.Installer/NnPensionTracker.Installer.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0" Id="8c5fedb7-8238-4798-bbb2-6177c1cf0988">
+    <Platform Project="x64" />
+    <Build Solution="Debug|*" Project="false" />
+    <Build Solution="Release|*" Project="false" />
+  </Project>
 </Solution>
