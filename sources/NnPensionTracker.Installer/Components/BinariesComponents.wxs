@@ -2,8 +2,10 @@
 	<Fragment>
 
 		<!-- All binaries from the CLI self-contained win-x64 publish output -->
-		<ComponentGroup Id="NnPensionTrackerBinaries" Directory="INSTALLFOLDER">
+		<ComponentGroup Id="BinariesComponents" Directory="INSTALLFOLDER">
+			
 			<Files Include="$(var.BinariesDir)**\*" />
+			
 		</ComponentGroup>
 
 	</Fragment>

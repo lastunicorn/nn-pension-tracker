@@ -9,7 +9,7 @@
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 
 		<Feature Id="Main">
-			<ComponentGroupRef Id="NnPensionTrackerBinaries" />
+			<ComponentGroupRef Id="BinariesComponents" />
 			<ComponentGroupRef Id="AppSettingsComponents" />
 			<ComponentGroupRef Id="PathComponents" />
 		</Feature>
