@@ -10,14 +10,6 @@
 		<Configurations>Debug;Release;Release plus Install</Configurations>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
-		<!-- .deb packaging (Packaging.Targets) -->
-		<!-- PackagePrefix drives: Debian Package: field, /usr/local/bin/ command name, install dir -->
-		<PackagePrefix>nn-pension-tracker</PackagePrefix>
-		<PackageMaintainer>Dust in the Wind &lt;lastunicorn@users.noreply.github.com&gt;</PackageMaintainer>
-		<PackageHomepage>https://github.com/lastunicorn/nn-pension-tracker</PackageHomepage>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<!-- Framework-dependent: net10.0 is not auto-detected by Packaging.Targets; add the runtime dep explicitly -->
 		<DebDotNetDependencies Include="dotnet-runtime-10.0 | dotnet10" />

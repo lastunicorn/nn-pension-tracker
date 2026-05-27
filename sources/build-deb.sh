@@ -16,15 +16,12 @@ set -euo pipefail
 
 CONFIGURATION="${1:-Release}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT="$SCRIPT_DIR/NnPensionTracker.Cli/NnPensionTracker.Cli.csproj"
+PROJECT="$SCRIPT_DIR/NnPensionTracker.DebInstaller/NnPensionTracker.DebInstaller.csproj"
 
 echo "==> Building .deb package (configuration: $CONFIGURATION)"
 
-dotnet publish "$PROJECT" \
-    --configuration "$CONFIGURATION" \
-    --runtime linux-x64 \
-    --no-self-contained \
-    /t:CreateDeb
+dotnet msbuild "$PROJECT" \
+    -p:Configuration="$CONFIGURATION"
 
 # Locate the produced .deb file and print its path.
 DEB_FILE=$(find "$SCRIPT_DIR/NnPensionTracker.Cli/bin/$CONFIGURATION" \

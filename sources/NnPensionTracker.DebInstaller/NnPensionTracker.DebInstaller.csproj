@@ -1,0 +1,17 @@
+<Project InitialTargets="CreateDeb">
+
+	<PropertyGroup>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+		<CliProject>$(MSBuildThisFileDirectory)..\NnPensionTracker.Cli\NnPensionTracker.Cli.csproj</CliProject>
+
+		<!-- deb package metadata -->
+		<PackagePrefix>nn-pension-tracker</PackagePrefix>
+		<PackageMaintainer>Dust in the Wind &lt;lastunicorn@users.noreply.github.com&gt;</PackageMaintainer>
+		<PackageHomepage>https://github.com/lastunicorn/nn-pension-tracker</PackageHomepage>
+	</PropertyGroup>
+
+	<Target Name="CreateDeb">
+		<Exec Command="dotnet publish &quot;$(CliProject)&quot; --configuration $(Configuration) --runtime linux-x64 --no-self-contained /t:CreateDeb /p:PackagePrefix=$(PackagePrefix) /p:PackageMaintainer=&quot;$(PackageMaintainer)&quot; /p:PackageHomepage=$(PackageHomepage)" />
+	</Target>
+
+</Project>
