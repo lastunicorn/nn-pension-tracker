@@ -2,10 +2,8 @@ namespace DustInTheWind.NnPensionTracker.Cli;
 
 internal class DeploymentEnvironment
 {
-    private const string AppDirectoryName = "nn-pension-tracker";
-    private const string PortableMarkerFileName = "portable";
-
-    public bool IsPortable { get; } = File.Exists(Path.Combine(AppContext.BaseDirectory, PortableMarkerFileName));
+    private readonly bool isPortable;
+    private readonly string appDirectoryName;
 
     public IEnumerable<string> AppSettingsFilePaths { get; }
 
@@ -13,6 +11,19 @@ internal class DeploymentEnvironment
 
     public DeploymentEnvironment()
     {
+        string portableMarkerFileName = "portable";
+        string portableMarkerFilePath = Path.Combine(AppContext.BaseDirectory, portableMarkerFileName);
+        isPortable = File.Exists(portableMarkerFilePath);
+
+        if (isPortable)
+            appDirectoryName = string.Empty;
+        else if (OperatingSystem.IsWindows())
+            appDirectoryName = "Nn Pension Tracker";
+        else if (OperatingSystem.IsLinux())
+            appDirectoryName = ".nn-pension-tracker";
+        else
+            appDirectoryName = string.Empty;
+
         AppSettingsFilePaths = ResolveAppSettingsFilePaths();
         DataDirectoryPath = ResolveDataDirectoryPath();
     }
@@ -21,7 +32,7 @@ internal class DeploymentEnvironment
     {
         const string fileName = "appsettings.json";
 
-        if (IsPortable)
+        if (isPortable)
         {
             yield return Path.Combine(AppContext.BaseDirectory, fileName);
             yield break;
@@ -30,35 +41,35 @@ internal class DeploymentEnvironment
         if (OperatingSystem.IsWindows())
         {
             string commonAppData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            yield return Path.Combine(commonAppData, AppDirectoryName, fileName);
+            yield return Path.Combine(commonAppData, appDirectoryName, fileName);
 
             string userAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            yield return Path.Combine(userAppData, AppDirectoryName, fileName);
+            yield return Path.Combine(userAppData, appDirectoryName, fileName);
         }
         else if (OperatingSystem.IsLinux())
         {
-            yield return Path.Combine("/etc", AppDirectoryName, fileName);
+            yield return Path.Combine("/etc", appDirectoryName, fileName);
 
             string userConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            yield return Path.Combine(userConfigDir, AppDirectoryName, fileName);
+            yield return Path.Combine(userConfigDir, appDirectoryName, fileName);
         }
     }
 
     private string ResolveDataDirectoryPath()
     {
-        if (IsPortable)
+        if (isPortable)
             return Path.Combine(AppContext.BaseDirectory, "Data");
 
         if (OperatingSystem.IsWindows())
         {
             string userAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            return Path.Combine(userAppData, AppDirectoryName, "Data");
+            return Path.Combine(userAppData, appDirectoryName, "Data");
         }
 
         if (OperatingSystem.IsLinux())
         {
             string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            return Path.Combine(userHome, AppDirectoryName, "Data");
+            return Path.Combine(userHome, appDirectoryName, "Data");
         }
 
         return Path.Combine(AppContext.BaseDirectory, "Data");

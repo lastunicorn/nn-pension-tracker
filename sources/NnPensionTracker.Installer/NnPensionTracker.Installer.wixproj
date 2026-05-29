@@ -1,12 +1,16 @@
 ﻿<Project Sdk="WixToolset.Sdk/5.0.2" InitialTargets="PublishCli">
-
+	
 	<PropertyGroup>
 		<Configurations>Debug;Release;Release plus Install</Configurations>
 		<DefineConstants>BinariesDir=$(SolutionRoot)publish\win-x64\;ProductVersion=$(Version)</DefineConstants>
 	</PropertyGroup>
-
+	
 	<Target Name="PublishCli">
 		<Exec Command="dotnet publish $(MSBuildThisFileDirectory)..\NnPensionTracker.Cli\NnPensionTracker.Cli.csproj /p:PublishProfile=win-x64" />
 	</Target>
-
+	
+	<ItemGroup>
+		<ProjectReference Include="..\NnPensionTracker.Cli.Presentation\NnPensionTracker.Cli.Presentation.csproj" PrivateAssets="All" />
+	</ItemGroup>
+	
 </Project>

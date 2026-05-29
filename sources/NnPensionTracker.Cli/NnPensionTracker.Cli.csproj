@@ -61,10 +61,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\NnPensionTracker.Cli.Presentation\NnPensionTracker.Cli.Presentation.csproj" />
-		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" />
-		<ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" />
-		<ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" />
+		<ProjectReference Include="..\NnPensionTracker.Cli.Presentation\NnPensionTracker.Cli.Presentation.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
