@@ -13,7 +13,7 @@
 | Deployment Method | Path                                                         |
 | ----------------- | ------------------------------------------------------------ |
 | Portable (zip)    | Unzip directory                                              |
-| Windows (msi)     | `C:\ProgramData\NN Pension Tracker`<br />`C:\Users\\[user]\AppData\NN Pension Tracker` |
+| Windows (msi)     | `C:\ProgramData\NN Pension Tracker`<br />`C:\Users\[user]\AppData\Roaming\NN Pension Tracker` |
 | Linux (deb)       | `/etc/nn-pension-tracker`                                    |
 
 ## Database

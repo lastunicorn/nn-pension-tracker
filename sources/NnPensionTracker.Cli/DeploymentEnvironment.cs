@@ -62,7 +62,7 @@ internal class DeploymentEnvironment
 
         if (OperatingSystem.IsWindows())
         {
-            string userAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string userAppData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
             return Path.Combine(userAppData, appDirectoryName, "Data");
         }
 
