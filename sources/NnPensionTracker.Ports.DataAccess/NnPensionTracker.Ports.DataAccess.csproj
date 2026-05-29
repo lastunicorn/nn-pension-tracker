@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" />
+		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

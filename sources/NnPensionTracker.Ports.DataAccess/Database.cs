@@ -5,33 +5,46 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class Database
 {
-	public List<Contribution> Contributions { get; } = [];
+    private string connectionString;
 
-	public List<FundNav> FundNavs { get; } = [];
-	
-	public List<DataLabel> DataLabels { get; } = [];
+    public List<Contribution> Contributions { get => IsOpen ? field : throw new DatabaseNotOpenException(); } = [];
 
-	public async Task OpenAsync()
-	{
-		ContributionPersister contributionPersister = new();
-		Contributions.AddRange(await contributionPersister.LoadAsync());
+    public List<FundNav> FundNavs { get => IsOpen ? field : throw new DatabaseNotOpenException(); } = [];
 
-		FundRecordPersister fundRecordPersister = new();
-		FundNavs.AddRange(await fundRecordPersister.LoadAsync());
-		
-		DataLabelParser dataLabelParser = new();
-		DataLabels.AddRange(await dataLabelParser.LoadAsync());
-	}
+    public List<DataLabel> DataLabels { get => IsOpen ? field : throw new DatabaseNotOpenException(); } = [];
 
-	public async Task SaveAllAsync()
-	{
-		ContributionPersister contributionPersister = new();
-		await contributionPersister.SaveAsync(Contributions);
+    private bool IsOpen => connectionString is not null;
 
-		FundRecordPersister fundRecordPersister = new();
-		await fundRecordPersister.SaveAsync(FundNavs);
-		
-		DataLabelParser dataLabelParser = new();
-		await dataLabelParser.SaveAsync(DataLabels);
-	}
+    public async Task OpenAsync(string connectionString)
+    {
+        this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+
+        Contributions.Clear();
+        FundNavs.Clear();
+        DataLabels.Clear();
+
+        ContributionPersister contributionPersister = new(connectionString);
+        Contributions.AddRange(await contributionPersister.LoadAsync());
+
+        FundRecordPersister fundRecordPersister = new(connectionString);
+        FundNavs.AddRange(await fundRecordPersister.LoadAsync());
+
+        DataLabelParser dataLabelParser = new(connectionString);
+        DataLabels.AddRange(await dataLabelParser.LoadAsync());
+    }
+
+    public async Task SaveAllAsync()
+    {
+        if (!IsOpen)
+            throw new DatabaseNotOpenException();
+
+        ContributionPersister contributionPersister = new(connectionString!);
+        await contributionPersister.SaveAsync(Contributions);
+
+        FundRecordPersister fundRecordPersister = new(connectionString!);
+        await fundRecordPersister.SaveAsync(FundNavs);
+
+        DataLabelParser dataLabelParser = new(connectionString!);
+        await dataLabelParser.SaveAsync(DataLabels);
+    }
 }
