@@ -72,4 +72,10 @@
 		<None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="" Link="README.md" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="portable">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>
