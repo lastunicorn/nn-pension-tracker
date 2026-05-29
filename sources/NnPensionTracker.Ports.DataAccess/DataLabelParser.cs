@@ -5,8 +5,13 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class DataLabelParser
 {
-	private const string DatabasePath = "Data";
+	private readonly string dataDirectoryPath;
 	private const string FileName = "data-labels.json";
+
+	public DataLabelParser(string dataDirectoryPath)
+	{
+		this.dataDirectoryPath = dataDirectoryPath ?? throw new ArgumentNullException(nameof(dataDirectoryPath));
+	}
 
 	private readonly JsonSerializerOptions jsonSerializerOptions = new()
 	{
@@ -16,7 +21,7 @@ public class DataLabelParser
 
 	public async Task<IEnumerable<DataLabel>> LoadAsync()
 	{
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		if (!File.Exists(filePath))
 			return [];
@@ -34,10 +39,10 @@ public class DataLabelParser
 
 	public Task SaveAsync(IEnumerable<DataLabel> contributions)
 	{
-		if (!Directory.Exists(DatabasePath))
-			Directory.CreateDirectory(DatabasePath);
+		if (!Directory.Exists(dataDirectoryPath))
+			Directory.CreateDirectory(dataDirectoryPath);
 
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		try
 		{

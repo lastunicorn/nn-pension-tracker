@@ -5,8 +5,13 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class FundRecordPersister : IEntityPersister<FundNav>
 {
-	private const string DatabasePath = "Data";
+	private readonly string dataDirectoryPath;
 	private const string FileName = "fund-navs.json";
+
+	public FundRecordPersister(string dataDirectoryPath)
+	{
+		this.dataDirectoryPath = dataDirectoryPath ?? throw new ArgumentNullException(nameof(dataDirectoryPath));
+	}
 
 	private readonly JsonSerializerOptions jsonSerializerOptions = new()
 	{
@@ -15,7 +20,7 @@ public class FundRecordPersister : IEntityPersister<FundNav>
 
 	public async Task<IEnumerable<FundNav>> LoadAsync()
 	{
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		if (!File.Exists(filePath))
 			return [];
@@ -33,10 +38,10 @@ public class FundRecordPersister : IEntityPersister<FundNav>
 
 	public Task SaveAsync(IEnumerable<FundNav> fundRecords)
 	{
-		if (!Directory.Exists(DatabasePath))
-			Directory.CreateDirectory(DatabasePath);
+		if (!Directory.Exists(dataDirectoryPath))
+			Directory.CreateDirectory(dataDirectoryPath);
 
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		try
 		{

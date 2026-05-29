@@ -21,10 +21,11 @@ internal static class Setup
 {
     public static void ConfigureServices(ServiceCollection services)
     {
-        services.AddSingleton(_ =>
+        services.AddSingleton(services =>
         {
+            DeploymentEnvironment deploymentEnvironment = services.GetRequiredService<DeploymentEnvironment>();
             Database database = new();
-            database.OpenAsync().GetAwaiter().GetResult();
+            database.OpenAsync(deploymentEnvironment.DataDirectoryPath).GetAwaiter().GetResult();
             return database;
         });
 

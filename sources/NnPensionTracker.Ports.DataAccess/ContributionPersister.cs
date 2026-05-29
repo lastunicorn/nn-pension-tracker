@@ -5,8 +5,13 @@ namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
 public class ContributionPersister : IEntityPersister<Contribution>
 {
-	private const string DatabasePath = "Data";
+	private readonly string dataDirectoryPath;
 	private const string FileName = "contributions.json";
+
+	public ContributionPersister(string dataDirectoryPath)
+	{
+		this.dataDirectoryPath = dataDirectoryPath ?? throw new ArgumentNullException(nameof(dataDirectoryPath));
+	}
 
 	private readonly JsonSerializerOptions jsonSerializerOptions = new()
 	{
@@ -16,7 +21,7 @@ public class ContributionPersister : IEntityPersister<Contribution>
 
 	public async Task<IEnumerable<Contribution>> LoadAsync()
 	{
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		if (!File.Exists(filePath))
 			return [];
@@ -34,10 +39,10 @@ public class ContributionPersister : IEntityPersister<Contribution>
 
 	public Task SaveAsync(IEnumerable<Contribution> contributions)
 	{
-		if (!Directory.Exists(DatabasePath))
-			Directory.CreateDirectory(DatabasePath);
+		if (!Directory.Exists(dataDirectoryPath))
+			Directory.CreateDirectory(dataDirectoryPath);
 
-		string filePath = Path.Combine(DatabasePath, FileName);
+		string filePath = Path.Combine(dataDirectoryPath, FileName);
 
 		try
 		{
