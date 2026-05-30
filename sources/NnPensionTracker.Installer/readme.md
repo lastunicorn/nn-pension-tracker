@@ -5,7 +5,7 @@
 To install the application run the command:
 
 ```cmd
-msiexec /i NnPensionTracker.Installer.msi
+msiexec /i NnPensionTracker[version].msi
 ```
 
 ## Uninstall
@@ -13,7 +13,7 @@ msiexec /i NnPensionTracker.Installer.msi
 To uninstall:
 
 ```cmd
-msiexec /x NnPensionTracker.Installer.msi
+msiexec /x NnPensionTracker[version].msi
 ```
 
 ## Runtime
