@@ -8,6 +8,8 @@
 		
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 
+		<MediaTemplate EmbedCab="yes" />
+
 		<Feature Id="Main">
 			<ComponentGroupRef Id="BinariesComponents" />
 			<ComponentGroupRef Id="AppSettingsComponents" />
