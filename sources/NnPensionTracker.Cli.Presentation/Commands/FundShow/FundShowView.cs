@@ -11,7 +11,7 @@ internal class FundShowView : ViewBase<FundShowViewModel>
 	{
 		DataGrid dataGrid = new()
 		{
-			EmptyGridMessage = viewModel.IsFromWeb ? "No data" : "No fund records found."
+			EmptyGridMessage = "No data"
 		};
 
 		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
@@ -24,8 +24,7 @@ internal class FundShowView : ViewBase<FundShowViewModel>
 				fundNav.Value);
 		}
 
-		if (viewModel.IsFromWeb)
-			dataGrid.Footer = $"Total: {viewModel.FundNavs.Count} records";
+		dataGrid.Footer = $"Total: {viewModel.FundNavs.Count} records";
 
 		dataGrid.Display();
 	}

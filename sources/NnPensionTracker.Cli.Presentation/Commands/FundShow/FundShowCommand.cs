@@ -1,6 +1,5 @@
 using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFund;
-using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFundFromWeb;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
@@ -36,41 +35,29 @@ internal class FundShowCommand : IConsoleCommand<FundShowViewModel>
 		if (Verb != null && Verb != "show")
 			throw new Exception($"Unknown command: fund {Verb}");
 
-		if (Source == null)
+		ShowFundRequest request = new()
 		{
-			ShowFundRequest request = new()
-			{
-				Year = Year,
-				FromDate = FromDate,
-				ToDate = ToDate
-			};
+			Source = ParseSource(Source),
+			Year = Year,
+			FromDate = FromDate,
+			ToDate = ToDate
+		};
 
-			ShowFundResponse response = await requestBus.SendAsync<ShowFundRequest, ShowFundResponse>(request);
+		ShowFundResponse response = await requestBus.SendAsync<ShowFundRequest, ShowFundResponse>(request);
 
-			return new FundShowViewModel
-			{
-				FundNavs = response.FundNavs
-			};
-		}
-
-		if (Source == "web" || Source == "nn-api")
+		return new FundShowViewModel
 		{
-			ShowFundFromWebRequest request = new()
-			{
-				Year = Year,
-				FromDate = FromDate,
-				ToDate = ToDate
-			};
+			FundNavs = response.FundNavs
+		};
+	}
 
-			ShowFundFromWebResponse response = await requestBus.SendAsync<ShowFundFromWebRequest, ShowFundFromWebResponse>(request);
-
-			return new FundShowViewModel
-			{
-				FundNavs = response.FundNavs,
-				IsFromWeb = true
-			};
-		}
-
-		throw new Exception($"Unknown source: '{Source}'. Supported sources: 'web', 'nn-api'.");
+	private static FundNavSource ParseSource(string text)
+	{
+		return text switch
+		{
+			null => FundNavSource.Database,
+			"web" or "nn-api" => FundNavSource.Web,
+			_ => throw new Exception($"Unknown source: '{text}'. Supported sources: 'web', 'nn-api'.")
+		};
 	}
 }
