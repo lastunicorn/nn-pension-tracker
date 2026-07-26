@@ -9,11 +9,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DustInTheWind.NN.Toolkit" Version="1.5.0" />
+		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" />
+		<PackageReference Include="DustInTheWind.NN.Toolkit" Version="1.5.0" />
 	</ItemGroup>
 
 </Project>

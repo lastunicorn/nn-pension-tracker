@@ -64,6 +64,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\NnPensionTracker.Adapters.DataAccess\NnPensionTracker.Adapters.DataAccess.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Adapters.FileSystemAccess\NnPensionTracker.Adapters.FileSystemAccess.csproj" PrivateAssets="All" />
 		<ProjectReference Include="..\NnPensionTracker.Cli.Presentation\NnPensionTracker.Cli.Presentation.csproj" PrivateAssets="All" />
 		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" PrivateAssets="All" />
 		<ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" PrivateAssets="All" />

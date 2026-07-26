@@ -1,4 +1,6 @@
-namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+
+namespace DustInTheWind.NnPensionTracker.Adapters.DataAccess;
 
 public class UnitOfWork : IUnitOfWork
 {

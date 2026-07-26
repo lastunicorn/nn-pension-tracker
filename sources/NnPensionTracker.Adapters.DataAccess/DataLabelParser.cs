@@ -1,7 +1,7 @@
 using System.Text.Json;
 using DustInTheWind.NnPensionTracker.Domain;
 
-namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Adapters.DataAccess;
 
 public class DataLabelParser
 {

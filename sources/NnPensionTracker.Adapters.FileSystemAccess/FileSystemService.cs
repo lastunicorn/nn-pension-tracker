@@ -1,4 +1,6 @@
-namespace DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+
+namespace DustInTheWind.NnPensionTracker.Adapters.FileSystemAccess;
 
 public class FileSystemService : IFileSystemService
 {

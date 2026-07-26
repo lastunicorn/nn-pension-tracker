@@ -1,6 +1,7 @@
 using DustInTheWind.NnPensionTracker.Domain;
+using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 
-namespace DustInTheWind.NnPensionTracker.Ports.DataAccess;
+namespace DustInTheWind.NnPensionTracker.Adapters.DataAccess;
 
 public class FundNavRepository : IFundNavRepository
 {

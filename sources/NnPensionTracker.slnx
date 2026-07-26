@@ -6,20 +6,27 @@
     <Platform Name="Any CPU" />
     <Platform Name="x64" />
   </Configurations>
-  <Folder Name="/Common/">
-    <File Path="build-deb.sh" />
-    <File Path="Directory.Build.props" />
+  <Folder Name="/App.Cli/">
+    <Project Path="NnPensionTracker.Cli.Application/NnPensionTracker.Cli.Application.csproj">
+      <BuildType Solution="Release plus Install|*" Project="Debug" />
+    </Project>
+    <Project Path="NnPensionTracker.Cli.Presentation/NnPensionTracker.Cli.Presentation.csproj" />
+    <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />
   </Folder>
-  <Folder Name="/Ports/">
+  <Folder Name="/Ports/" />
+  <Folder Name="/Ports/DataAccess/">
+    <Project Path="NnPensionTracker.Adapters.DataAccess/NnPensionTracker.Adapters.DataAccess.csproj">
+      <BuildType Solution="Release plus Install|*" Project="Debug" />
+    </Project>
     <Project Path="NnPensionTracker.Ports.DataAccess/NnPensionTracker.Ports.DataAccess.csproj" />
+  </Folder>
+  <Folder Name="/Ports/FileSystemAccess/">
+    <Project Path="NnPensionTracker.Adapters.FileSystemAccess/NnPensionTracker.Adapters.FileSystemAccess.csproj">
+      <BuildType Solution="Release plus Install|*" Project="Debug" />
+    </Project>
     <Project Path="NnPensionTracker.Ports.FileSystemAccess/NnPensionTracker.Ports.FileSystemAccess.csproj" />
   </Folder>
-  <Project Path="NnPensionTracker.Cli.Application/NnPensionTracker.Cli.Application.csproj">
-    <BuildType Solution="Release plus Install|*" Project="Debug" />
-  </Project>
-  <Project Path="NnPensionTracker.Cli.Presentation/NnPensionTracker.Cli.Presentation.csproj" />
   <Project Path="NnPensionTracker.Cli.Tests\NnPensionTracker.Cli.Tests.csproj" />
-  <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />
   <Project Path="NnPensionTracker.Domain/NnPensionTracker.Domain.csproj" />
   <Project Path="NnPensionTracker.Installer/NnPensionTracker.Installer.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0" Id="8c5fedb7-8238-4798-bbb2-6177c1cf0988">
     <Platform Project="x64" />
