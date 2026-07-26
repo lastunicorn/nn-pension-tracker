@@ -1,4 +1,4 @@
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromWeb;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ImportFundFromWeb;
 using FluentAssertions;
 
 namespace NN.Toolkit.Cli.Tests.UnixDateIntervalTests;

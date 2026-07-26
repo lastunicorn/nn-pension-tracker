@@ -7,4 +7,20 @@
 		<RootNamespace>DustInTheWind.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="ConsoleTools.Controls.Tables" Version="1.2.1" />
+		<PackageReference Include="RequestR" Version="2.2.0" />
+		<PackageReference Include="CsvHelper" Version="33.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="NnPensionTracker.Cli.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\NnPensionTracker.Domain\NnPensionTracker.Domain.csproj" />
+		<ProjectReference Include="..\NnPensionTracker.Ports.DataAccess\NnPensionTracker.Ports.DataAccess.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" />
+	</ItemGroup>
+
 </Project>

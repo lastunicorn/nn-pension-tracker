@@ -1,5 +1,5 @@
 using DustInTheWind.ConsoleTools.Commando;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ClearFund;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;

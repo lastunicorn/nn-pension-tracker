@@ -1,6 +1,6 @@
 using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowAccount;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowAccount;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;

@@ -33,7 +33,7 @@ internal static class Program
 			IConfigurationRoot configuration = BuildConfiguration(deploymentEnvironment);
 			ApplyCultureFromAppSettings(configuration);
 
-			Application application = ApplicationBuilder.Create()
+			ConsoleTools.Commando.Application application = ApplicationBuilder.Create()
 				.RegisterCommandsFromAssemblyContaining(typeof(NounVerbCommandParser))
 				.UseCommandParser(typeof(NounVerbCommandParser))
 				.ConfigureServices(x => Setup.ConfigureServices(x, deploymentEnvironment, configuration))

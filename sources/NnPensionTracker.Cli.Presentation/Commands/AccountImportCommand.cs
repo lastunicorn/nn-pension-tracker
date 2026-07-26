@@ -1,5 +1,5 @@
 using DustInTheWind.ConsoleTools.Commando;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ImportAccount;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;

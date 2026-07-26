@@ -1,6 +1,6 @@
 using DustInTheWind.ConsoleTools.Commando;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFundFromWeb;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFund;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFundFromWeb;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;

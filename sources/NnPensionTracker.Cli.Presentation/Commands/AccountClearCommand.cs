@@ -1,5 +1,5 @@
 using DustInTheWind.ConsoleTools.Commando;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
+using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ClearAccount;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
