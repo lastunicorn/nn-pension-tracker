@@ -13,8 +13,8 @@ internal class FundShowCommand : IConsoleCommand<FundShowViewModel>
 	[AnonymousParameter(Order = 1, IsMandatory = false, DisplayName = "verb", Description = "Optional 'show' verb. It is the default action, so it may be omitted.")]
 	public string Verb { get; set; }
 
-	[NamedParameter("source", IsMandatory = false, Description = "The source of the fund values: 'web' or 'nn-api'. When not specified, the values are read from the database.")]
-	public string Source { get; set; }
+	[NamedParameter("source", IsMandatory = false, Description = "The source of the fund values: 'web'. When not specified, the values are read from the database.")]
+	public FundNavSource Source { get; set; }
 
 	[NamedParameter("year", IsMandatory = false, Description = "Displays only the fund values from the specified year.")]
 	public int? Year { get; set; }
@@ -37,7 +37,7 @@ internal class FundShowCommand : IConsoleCommand<FundShowViewModel>
 
 		ShowFundRequest request = new()
 		{
-			Source = ParseSource(Source),
+			Source = Source,
 			Year = Year,
 			FromDate = FromDate,
 			ToDate = ToDate
@@ -48,16 +48,6 @@ internal class FundShowCommand : IConsoleCommand<FundShowViewModel>
 		return new FundShowViewModel
 		{
 			FundNavs = response.FundNavs
-		};
-	}
-
-	private static FundNavSource ParseSource(string text)
-	{
-		return text switch
-		{
-			null => FundNavSource.Database,
-			"web" or "nn-api" => FundNavSource.Web,
-			_ => throw new Exception($"Unknown source: '{text}'. Supported sources: 'web', 'nn-api'.")
 		};
 	}
 }
