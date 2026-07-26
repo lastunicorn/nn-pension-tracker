@@ -2,7 +2,7 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ExportFund;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundExport;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundExport;
 
 [NamedCommand("fund-export", Description = "Exports the fund NAV values from the database into a CSV file.")]
 [CommandOrder(23)]

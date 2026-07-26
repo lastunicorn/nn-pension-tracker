@@ -27,9 +27,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Commands\AccountClear\" />
-	  <Folder Include="Commands\AccountShow\" />
-	  <Folder Include="Commands\Fund\" />
+	  <Folder Include="AccountArea\" />
+	  <Folder Include="FundArea\" />
 	</ItemGroup>
 
 </Project>

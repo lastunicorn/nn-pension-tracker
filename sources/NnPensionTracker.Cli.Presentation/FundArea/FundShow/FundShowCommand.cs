@@ -2,7 +2,7 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFund;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundShow;
 
 [NamedCommand("fund-show", Description = "Displays the fund NAV values from the database or, when --source web is specified, directly from NN's website.")]
 [CommandOrder(21)]

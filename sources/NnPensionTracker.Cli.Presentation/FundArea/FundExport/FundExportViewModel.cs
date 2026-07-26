@@ -1,4 +1,4 @@
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundExport;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundExport;
 
 internal class FundExportViewModel
 {

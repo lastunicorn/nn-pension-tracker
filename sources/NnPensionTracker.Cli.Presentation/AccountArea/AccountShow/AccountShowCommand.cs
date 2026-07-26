@@ -3,7 +3,7 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowAccount;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.AccountShow;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.AccountArea.AccountShow;
 
 [NamedCommand("account-show", Description = "Displays the contributions from the current account, optionally filtered by year or by a month interval.")]
 [CommandOrder(11)]

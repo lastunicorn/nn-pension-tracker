@@ -3,7 +3,7 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.AccountShow;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.AccountArea.AccountShow;
 
 internal class AccountShowView : ViewBase<AccountShowViewModel>
 {

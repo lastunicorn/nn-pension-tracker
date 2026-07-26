@@ -3,7 +3,7 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NnPensionTracker.Domain;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundShow;
 
 internal class FundShowView : ViewBase<FundShowViewModel>
 {

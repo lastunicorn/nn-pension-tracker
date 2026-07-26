@@ -1,6 +1,6 @@
 using DustInTheWind.NnPensionTracker.Domain;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundShow;
 
 internal class FundShowViewModel
 {

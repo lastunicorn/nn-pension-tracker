@@ -1,7 +1,7 @@
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Commando;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundClear;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundClear;
 
 internal class FundClearView : ViewBase<FundClearViewModel>
 {

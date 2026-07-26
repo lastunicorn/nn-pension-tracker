@@ -1,8 +1,8 @@
 using DustInTheWind.ConsoleTools.Commando;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.AccountShow;
+using DustInTheWind.NnPensionTracker.Cli.Presentation.AccountArea.AccountShow;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.Account;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.AccountArea.Account;
 
 // The "account" noun used without a verb defaults to the show action.
 [NamedCommand("account", Description = "Displays the contributions from the current account. Same as 'account show'.")]

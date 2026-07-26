@@ -1,6 +1,6 @@
 using DustInTheWind.ConsoleTools.Commando;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.AccountClear;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.AccountArea.AccountClear;
 
 internal class AccountClearView : ViewBase<AccountClearViewModel>
 {

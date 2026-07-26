@@ -1,7 +1,7 @@
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Commando;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundExport;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.FundArea.FundExport;
 
 internal class FundExportView : ViewBase<FundExportViewModel>
 {
