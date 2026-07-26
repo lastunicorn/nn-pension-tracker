@@ -10,28 +10,18 @@ namespace DustInTheWind.NnPensionTracker.Cli;
 
 internal static class Setup
 {
-    public static void ConfigureServices(ServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services, DeploymentEnvironment deploymentEnvironment, IConfigurationRoot configuration)
     {
-        services.AddSingleton(services =>
+        services.AddSingleton(deploymentEnvironment);
+        services.AddSingleton(configuration);
+
+        services.AddSingleton(x =>
         {
-            DeploymentEnvironment deploymentEnvironment = services.GetRequiredService<DeploymentEnvironment>();
+            DeploymentEnvironment environment = x.GetRequiredService<DeploymentEnvironment>();
             Database database = new();
-            database.OpenAsync(deploymentEnvironment.DataDirectoryPath).GetAwaiter().GetResult();
+            database.OpenAsync(environment.DataDirectoryPath).GetAwaiter().GetResult();
             return database;
         });
-
-        services.AddSingleton(services =>
-        {
-            DeploymentEnvironment deploymentEnvironment = services.GetRequiredService<DeploymentEnvironment>();
-            ConfigurationBuilder configurationBuilder = new();
-
-            foreach (string path in deploymentEnvironment.AppSettingsFilePaths)
-                configurationBuilder.AddJsonFile(path, optional: true, reloadOnChange: false);
-
-            return configurationBuilder.Build();
-        });
-
-        services.AddSingleton<DeploymentEnvironment>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddTransient<IFileSystemService, FileSystemService>();

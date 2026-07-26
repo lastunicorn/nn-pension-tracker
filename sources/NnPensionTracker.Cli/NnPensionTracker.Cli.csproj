@@ -28,7 +28,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ConsoleTools.Arguments" Version="1.0.0" />
+		<PackageReference Include="ConsoleTools.Commando" Version="2.1.0" />
+		<PackageReference Include="ConsoleTools.Commando.Parsing" Version="2.1.0" />
+		<PackageReference Include="ConsoleTools.Commando.Setup.Microsoft" Version="2.1.0" />
 		<PackageReference Include="ConsoleTools.Controls.Tables" Version="1.2.1" />
 		<PackageReference Include="CsvHelper" Version="33.1.0" />
 		<PackageReference Include="DustInTheWind.NN.Toolkit" Version="1.5.0" />
