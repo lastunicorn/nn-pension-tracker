@@ -12,26 +12,26 @@ namespace DustInTheWind.NnPensionTracker.Cli;
 
 internal static class Setup
 {
-    public static void ConfigureServices(IServiceCollection services, DeploymentEnvironment deploymentEnvironment, IConfigurationRoot configuration)
-    {
-        services.AddSingleton(deploymentEnvironment);
-        services.AddSingleton(configuration);
+	public static void ConfigureServices(IServiceCollection services, DeploymentEnvironment deploymentEnvironment, IConfigurationRoot configuration)
+	{
+		services.AddSingleton(deploymentEnvironment);
+		services.AddSingleton(configuration);
 
-        services.AddSingleton(x =>
-        {
-            DeploymentEnvironment environment = x.GetRequiredService<DeploymentEnvironment>();
-            Database database = new();
-            database.OpenAsync(environment.DataDirectoryPath).GetAwaiter().GetResult();
-            return database;
-        });
+		services.AddSingleton(x =>
+		{
+			DeploymentEnvironment environment = x.GetRequiredService<DeploymentEnvironment>();
+			Database database = new();
+			database.OpenAsync(environment.DataDirectoryPath).GetAwaiter().GetResult();
+			return database;
+		});
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddTransient<IFileSystemService, FileSystemService>();
-        services.AddTransient<INnApiClient, NnApiClient>();
+		services.AddScoped<IUnitOfWork, UnitOfWork>();
+		services.AddTransient<IFileSystemService, FileSystemService>();
+		services.AddTransient<INnApiClient, NnApiClient>();
 
-        services.AddUseCaseEngine(options =>
-        {
-            options.AddFromAssemblyContaining<ImportAccountUseCase>();
-        });
-    }
+		services.AddUseCaseEngine(options =>
+		{
+			options.AddFromAssemblyContaining<ImportAccountUseCase>();
+		});
+	}
 }

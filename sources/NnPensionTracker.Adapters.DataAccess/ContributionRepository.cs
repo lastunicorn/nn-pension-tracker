@@ -40,16 +40,16 @@ public class ContributionRepository : IContributionRepository
 		if (fromMonth.HasValue)
 		{
 			MonthDate from = fromMonth.Value;
-			contributions = contributions.Where(x => 
-				x.Month.Year > from.Year || 
+			contributions = contributions.Where(x =>
+				x.Month.Year > from.Year ||
 				(x.Month.Year == from.Year && x.Month.Month >= from.Month));
 		}
 
 		if (toMonth.HasValue)
 		{
 			MonthDate to = toMonth.Value;
-			contributions = contributions.Where(x => 
-				x.Month.Year < to.Year || 
+			contributions = contributions.Where(x =>
+				x.Month.Year < to.Year ||
 				(x.Month.Year == to.Year && x.Month.Month <= to.Month));
 		}
 

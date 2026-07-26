@@ -70,7 +70,7 @@ internal record struct UnixDateInterval
 		DateTimeOffset endOfDay = startOfDay.AddTicks(TimeSpan.TicksPerDay - TimeSpan.TicksPerMillisecond);
 		return endOfDay.ToUnixTimeMilliseconds();
 	}
-	
+
 	public override string ToString()
 	{
 		return $"{startDate?.ToString("yyyy-MM-dd") ?? "..."} — {endDate?.ToString("yyyy-MM-dd") ?? "..."}";

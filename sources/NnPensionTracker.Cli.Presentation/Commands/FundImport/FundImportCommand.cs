@@ -11,10 +11,12 @@ internal class FundImportCommand : IConsoleCommand
 {
 	private readonly RequestBus requestBus;
 
-	[NamedParameter("source", IsMandatory = false, Description = "The source of the fund values: 'web', 'nn-api' or 'file'. When not specified, it is inferred: 'file' if --file is provided, 'web' otherwise.")]
+	[NamedParameter("source", IsMandatory = false,
+		Description = "The source of the fund values: 'web', 'nn-api' or 'file'. When not specified, it is inferred: 'file' if --file is provided, 'web' otherwise.")]
 	public string Source { get; set; }
 
-	[NamedParameter("file", IsMandatory = false, Description = "The path of the CSV file containing the fund values. The file must have the format of the historical values file downloadable from NN's website.")]
+	[NamedParameter("file", IsMandatory = false,
+		Description = "The path of the CSV file containing the fund values. The file must have the format of the historical values file downloadable from NN's website.")]
 	public string FilePath { get; set; }
 
 	[NamedParameter("year", IsMandatory = false, Description = "Imports the fund values for the specified year from NN's website.")]

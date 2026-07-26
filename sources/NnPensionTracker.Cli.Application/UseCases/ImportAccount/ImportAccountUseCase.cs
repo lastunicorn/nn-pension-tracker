@@ -31,7 +31,7 @@ public class ImportAccountUseCase : IUseCase<ImportAccountRequest>
 		DisplayParsingDiagnostics(documentLoadResult.Diagnostics);
 
 		AddColumnNamesToStorage(documentLoadResult.Document.Header);
-		
+
 		ImportDiagnostics importDiagnostics = await AddContributionsToStorage(documentLoadResult.Document);
 		DisplayImportDiagnostics(importDiagnostics);
 
