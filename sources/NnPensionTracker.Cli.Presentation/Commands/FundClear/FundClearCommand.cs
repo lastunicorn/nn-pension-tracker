@@ -2,11 +2,11 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ClearFund;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundClear;
 
 [NamedCommand("fund-clear", Description = "Clears all fund NAV values from the database.")]
 [CommandOrder(24)]
-internal class FundClearCommand : IConsoleCommand
+internal class FundClearCommand : IConsoleCommand<FundClearViewModel>
 {
 	private readonly RequestBus requestBus;
 
@@ -15,8 +15,10 @@ internal class FundClearCommand : IConsoleCommand
 		this.requestBus = requestBus ?? throw new ArgumentNullException(nameof(requestBus));
 	}
 
-	public async Task Execute()
+	public async Task<FundClearViewModel> Execute()
 	{
 		await requestBus.SendAsync(new ClearFundRequest());
+
+		return new FundClearViewModel();
 	}
 }

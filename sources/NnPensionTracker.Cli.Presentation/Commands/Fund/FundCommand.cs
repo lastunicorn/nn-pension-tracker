@@ -1,7 +1,8 @@
 using DustInTheWind.ConsoleTools.Commando;
+using DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.Fund;
 
 // The "fund" noun used without a verb defaults to the show action.
 [NamedCommand("fund", Description = "Displays the fund NAV values from the database. Same as 'fund show'.")]

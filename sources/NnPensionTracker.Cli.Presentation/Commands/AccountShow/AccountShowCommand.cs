@@ -3,11 +3,11 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowAccount;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.AccountShow;
 
 [NamedCommand("account-show", Description = "Displays the contributions from the current account, optionally filtered by year or by a month interval.")]
 [CommandOrder(11)]
-internal class AccountShowCommand : IConsoleCommand
+internal class AccountShowCommand : IConsoleCommand<AccountShowViewModel>
 {
 	private readonly RequestBus requestBus;
 
@@ -28,7 +28,7 @@ internal class AccountShowCommand : IConsoleCommand
 		this.requestBus = requestBus ?? throw new ArgumentNullException(nameof(requestBus));
 	}
 
-	public async Task Execute()
+	public async Task<AccountShowViewModel> Execute()
 	{
 		if (Verb != null && Verb != "show")
 			throw new Exception($"Unknown command: account {Verb}");
@@ -40,7 +40,12 @@ internal class AccountShowCommand : IConsoleCommand
 			ToMonth = ParseMonth(ToMonth, "to", 12)
 		};
 
-		await requestBus.SendAsync(request);
+		ShowAccountResponse response = await requestBus.SendAsync<ShowAccountRequest, ShowAccountResponse>(request);
+
+		return new AccountShowViewModel
+		{
+			Contributions = response.Contributions
+		};
 	}
 
 	private static MonthDate? ParseMonth(string text, string parameterName, int defaultMonth)

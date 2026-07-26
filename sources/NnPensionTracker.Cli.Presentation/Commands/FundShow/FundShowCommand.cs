@@ -3,11 +3,11 @@ using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFund;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFundFromWeb;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundShow;
 
 [NamedCommand("fund-show", Description = "Displays the fund NAV values from the database or, when --source web is specified, directly from NN's website.")]
 [CommandOrder(21)]
-internal class FundShowCommand : IConsoleCommand
+internal class FundShowCommand : IConsoleCommand<FundShowViewModel>
 {
 	private readonly RequestBus requestBus;
 
@@ -31,7 +31,7 @@ internal class FundShowCommand : IConsoleCommand
 		this.requestBus = requestBus ?? throw new ArgumentNullException(nameof(requestBus));
 	}
 
-	public async Task Execute()
+	public async Task<FundShowViewModel> Execute()
 	{
 		if (Verb != null && Verb != "show")
 			throw new Exception($"Unknown command: fund {Verb}");
@@ -45,9 +45,15 @@ internal class FundShowCommand : IConsoleCommand
 				ToDate = ToDate
 			};
 
-			await requestBus.SendAsync(request);
+			ShowFundResponse response = await requestBus.SendAsync<ShowFundRequest, ShowFundResponse>(request);
+
+			return new FundShowViewModel
+			{
+				FundNavs = response.FundNavs
+			};
 		}
-		else if (Source == "web" || Source == "nn-api")
+
+		if (Source == "web" || Source == "nn-api")
 		{
 			ShowFundFromWebRequest request = new()
 			{
@@ -56,11 +62,15 @@ internal class FundShowCommand : IConsoleCommand
 				ToDate = ToDate
 			};
 
-			await requestBus.SendAsync(request);
+			ShowFundFromWebResponse response = await requestBus.SendAsync<ShowFundFromWebRequest, ShowFundFromWebResponse>(request);
+
+			return new FundShowViewModel
+			{
+				FundNavs = response.FundNavs,
+				IsFromWeb = true
+			};
 		}
-		else
-		{
-			throw new Exception($"Unknown source: '{Source}'. Supported sources: 'web', 'nn-api'.");
-		}
+
+		throw new Exception($"Unknown source: '{Source}'. Supported sources: 'web', 'nn-api'.");
 	}
 }

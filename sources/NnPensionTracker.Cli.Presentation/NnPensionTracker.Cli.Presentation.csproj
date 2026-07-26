@@ -26,4 +26,10 @@
 	  <ProjectReference Include="..\NnPensionTracker.Ports.FileSystemAccess\NnPensionTracker.Ports.FileSystemAccess.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Commands\AccountClear\" />
+	  <Folder Include="Commands\AccountShow\" />
+	  <Folder Include="Commands\Fund\" />
+	</ItemGroup>
+
 </Project>

@@ -2,11 +2,11 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ExportFund;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundExport;
 
 [NamedCommand("fund-export", Description = "Exports the fund NAV values from the database into a CSV file.")]
 [CommandOrder(23)]
-internal class FundExportCommand : IConsoleCommand
+internal class FundExportCommand : IConsoleCommand<FundExportViewModel>
 {
 	private readonly RequestBus requestBus;
 
@@ -21,7 +21,7 @@ internal class FundExportCommand : IConsoleCommand
 		this.requestBus = requestBus ?? throw new ArgumentNullException(nameof(requestBus));
 	}
 
-	public async Task Execute()
+	public async Task<FundExportViewModel> Execute()
 	{
 		ExportFundRequest request = new()
 		{
@@ -29,6 +29,12 @@ internal class FundExportCommand : IConsoleCommand
 			Year = Year
 		};
 
-		await requestBus.SendAsync(request);
+		ExportFundResponse response = await requestBus.SendAsync<ExportFundRequest, ExportFundResponse>(request);
+
+		return new FundExportViewModel
+		{
+			ExportedCount = response.ExportedCount,
+			FilePath = FilePath
+		};
 	}
 }

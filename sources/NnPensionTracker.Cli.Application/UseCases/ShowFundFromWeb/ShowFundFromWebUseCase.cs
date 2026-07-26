@@ -1,12 +1,10 @@
-using DustInTheWind.ConsoleTools.Controls;
-using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.ApiAccess;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFundFromWeb;
 
-public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
+public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest, ShowFundFromWebResponse>
 {
 	private readonly INnApiClient nnApiClient;
 
@@ -17,11 +15,11 @@ public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
 		this.nnApiClient = nnApiClient ?? throw new ArgumentNullException(nameof(nnApiClient));
 	}
 
-	public Task Execute(ShowFundFromWebRequest request, CancellationToken cancellationToken)
+	public Task<ShowFundFromWebResponse> Execute(ShowFundFromWebRequest request, CancellationToken cancellationToken)
 	{
 		ValidateDateInterval(request);
 
-		return DisplayFundNavsFromNnApi(request);
+		return RetrieveFundNavsFromNnApi(request);
 	}
 
 	private static void ValidateDateInterval(ShowFundFromWebRequest request)
@@ -33,7 +31,7 @@ public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
 			throw new Exception("The 'from' date cannot be greater than the 'to' date.");
 	}
 
-	private async Task DisplayFundNavsFromNnApi(ShowFundFromWebRequest request)
+	private async Task<ShowFundFromWebResponse> RetrieveFundNavsFromNnApi(ShowFundFromWebRequest request)
 	{
 		DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -62,7 +60,7 @@ public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
 
 		GraphData graphData = await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
 
-		IEnumerable<FundNav> fundNavs = graphData.Points
+		List<FundNav> fundNavs = graphData.Points
 			.Select(x => new FundNav
 			{
 				Date = DateOnly.FromDateTime(x.Date),
@@ -71,31 +69,9 @@ public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
 			.OrderBy(x => x.Date)
 			.ToList();
 
-		DisplayFundRecords(fundNavs);
-	}
-
-	private static void DisplayFundRecords(IEnumerable<FundNav> fundNavs)
-	{
-		DataGrid dataGrid = new()
+		return new ShowFundFromWebResponse
 		{
-			EmptyGridMessage = "No data"
+			FundNavs = fundNavs
 		};
-
-		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
-		dataGrid.Columns.Add("Value", HorizontalAlignment.Right);
-
-		int count = 0;
-		foreach (FundNav fundNav in fundNavs)
-		{
-			count++;
-			
-			dataGrid.Rows.Add(
-				fundNav.Date,
-				fundNav.Value);
-		}
-		
-		dataGrid.Footer = $"Total: {count} records";
-
-		dataGrid.Display();
 	}
 }

@@ -1,4 +1,3 @@
-using DustInTheWind.ConsoleTools;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.RequestR;
 
@@ -17,7 +16,5 @@ public class ClearFundUseCase : IUseCase<ClearFundRequest>
 	{
 		unitOfWork.FundNavRepository.Clear();
 		await unitOfWork.SaveChangesAsync();
-
-		CustomConsole.WriteLineSuccess("All fund records have been cleared.");
 	}
 }

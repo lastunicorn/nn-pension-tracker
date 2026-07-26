@@ -16,7 +16,5 @@ public class ClearAccountUseCase : IUseCase<ClearAccountRequest>
     {
         unitOfWork.ContributionRepository.Clear();
         await unitOfWork.SaveChangesAsync();
-
-        Console.WriteLine("All contributions have been cleared from the database.");
     }
 }

@@ -3,7 +3,7 @@ using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ImportFundFromFile
 using DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ImportFundFromWeb;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands.FundImport;
 
 [NamedCommand("fund-import", Description = "Imports fund NAV values from NN's website (--year or --from/--to) or from a CSV file (--file).")]
 [CommandOrder(22)]

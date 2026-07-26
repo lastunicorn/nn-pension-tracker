@@ -1,6 +1,5 @@
 using System.Globalization;
 using CsvHelper;
-using DustInTheWind.ConsoleTools;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
@@ -14,7 +13,7 @@ namespace DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ExportFund;
 ///     - "Date": date
 ///     - "Quote": number
 /// </summary>
-public class ExportFundUseCase : IUseCase<ExportFundRequest>
+public class ExportFundUseCase : IUseCase<ExportFundRequest, ExportFundResponse>
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly IFileSystemService fileSystemService;
@@ -26,7 +25,7 @@ public class ExportFundUseCase : IUseCase<ExportFundRequest>
 		this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
 	}
 
-	public async Task Execute(ExportFundRequest request, CancellationToken cancellationToken)
+	public async Task<ExportFundResponse> Execute(ExportFundRequest request, CancellationToken cancellationToken)
 	{
 		if (request.FilePath == null)
 			throw new ArgumentNullException(nameof(request.FilePath));
@@ -34,8 +33,10 @@ public class ExportFundUseCase : IUseCase<ExportFundRequest>
 		IAsyncEnumerable<FundNav> fundNavs = RetrieveFundNavsFromStorage(request.Year);
 		await ExportFundNavsToCsv(fundNavs, request.FilePath);
 
-		Console.WriteLine();
-		CustomConsole.WriteLineSuccess($"{count} fund NAV values were exported to: '{request.FilePath}'");
+		return new ExportFundResponse
+		{
+			ExportedCount = count
+		};
 	}
 
 	private IAsyncEnumerable<FundNav> RetrieveFundNavsFromStorage(int? year)

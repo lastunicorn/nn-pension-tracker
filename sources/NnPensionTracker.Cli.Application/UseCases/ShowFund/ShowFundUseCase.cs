@@ -1,12 +1,10 @@
-using DustInTheWind.ConsoleTools.Controls;
-using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Application.UseCases.ShowFund;
 
-public class ShowFundUseCase : IUseCase<ShowFundRequest>
+public class ShowFundUseCase : IUseCase<ShowFundRequest, ShowFundResponse>
 {
 	private readonly IUnitOfWork unitOfWork;
 
@@ -15,7 +13,7 @@ public class ShowFundUseCase : IUseCase<ShowFundRequest>
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}
 
-	public async Task Execute(ShowFundRequest request, CancellationToken cancellationToken)
+	public async Task<ShowFundResponse> Execute(ShowFundRequest request, CancellationToken cancellationToken)
 	{
 		List<FundNav> fundRecords = [];
 
@@ -34,28 +32,10 @@ public class ShowFundUseCase : IUseCase<ShowFundRequest>
 		fundRecords = fundRecords
 			.OrderBy(x => x.Date)
 			.ToList();
-		
-		DisplayFundRecords(fundRecords);
-	}
 
-	private void DisplayFundRecords(IEnumerable<FundNav> fundRecords)
-	{
-		DataGrid dataGrid = new()
+		return new ShowFundResponse
 		{
-			EmptyGridMessage = "No data"
+			FundNavs = fundRecords
 		};
-
-		dataGrid.Columns.Add("Date", HorizontalAlignment.Center);
-		dataGrid.Columns.Add("Value", HorizontalAlignment.Right);
-		dataGrid.EmptyGridMessage = "No fund records found.";
-
-		foreach (FundNav fundRecord in fundRecords)
-		{
-			dataGrid.Rows.Add(
-				fundRecord.Date,
-				fundRecord.Value);
-		}
-
-		dataGrid.Display();
 	}
 }
