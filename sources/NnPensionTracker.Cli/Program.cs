@@ -3,6 +3,7 @@ using System.Reflection;
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.ConsoleTools.Commando.Setup.Microsoft;
+using DustInTheWind.NnPensionTracker.Cli.Presentation;
 using Microsoft.Extensions.Configuration;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
@@ -33,7 +34,7 @@ internal static class Program
 			ApplyCultureFromAppSettings(configuration);
 
 			Application application = ApplicationBuilder.Create()
-				.RegisterCommandsFromAssemblyContaining(typeof(Program))
+				.RegisterCommandsFromAssemblyContaining(typeof(NounVerbCommandParser))
 				.UseCommandParser(typeof(NounVerbCommandParser))
 				.ConfigureServices(x => Setup.ConfigureServices(x, deploymentEnvironment, configuration))
 				.Build();

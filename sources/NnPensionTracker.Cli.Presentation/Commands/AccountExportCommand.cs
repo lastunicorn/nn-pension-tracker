@@ -2,7 +2,7 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
 
 [NamedCommand("account-export", Description = "Exports the contribution records from the database to a file. Supported formats: 'pp' (CSV files for PortfolioPerformance).")]
 [CommandOrder(13)]

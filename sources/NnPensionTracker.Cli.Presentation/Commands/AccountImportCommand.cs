@@ -2,7 +2,7 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
 
 [NamedCommand("account-import", Description = "Imports the contribution records from an NN contribution statement PDF file.")]
 [CommandOrder(12)]

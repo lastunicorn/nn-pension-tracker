@@ -3,12 +3,12 @@ using DustInTheWind.ConsoleTools.Commando.Parsing;
 using DustInTheWind.ConsoleTools.Commando.RequestModel;
 using ExecutionContext = DustInTheWind.ConsoleTools.Commando.MetadataModel.ExecutionContext;
 
-namespace DustInTheWind.NnPensionTracker.Cli;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation;
 
 // Commando matches commands by a single-token name (the first bare argument), so the
 // noun-verb grammar ("account import") is preserved by folding the leading noun and verb
 // into one command name ("account-import") whenever a command with that name is registered.
-internal class NounVerbCommandParser : ICommandParser
+public class NounVerbCommandParser : ICommandParser
 {
 	private readonly ExecutionContext executionContext;
 	private readonly CommandParser commandParser = new();

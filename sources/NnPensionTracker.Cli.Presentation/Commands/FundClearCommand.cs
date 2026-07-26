@@ -2,7 +2,7 @@ using DustInTheWind.ConsoleTools.Commando;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
 using DustInTheWind.RequestR;
 
-namespace DustInTheWind.NnPensionTracker.Cli.Commands;
+namespace DustInTheWind.NnPensionTracker.Cli.Presentation.Commands;
 
 [NamedCommand("fund-clear", Description = "Clears all fund NAV values from the database.")]
 [CommandOrder(24)]
