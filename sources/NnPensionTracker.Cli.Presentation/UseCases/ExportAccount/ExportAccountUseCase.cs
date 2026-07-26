@@ -2,6 +2,7 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
 
@@ -10,14 +11,10 @@ namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount
 /// nn_transactions.csv -> "Security Name,Ticker Symbol,Date,Time,Value,Shares,Type,Fees,Note"
 /// nn_cash_transactions.csv -> "Type,Cash Account,Date,Time,Value,Note"
 /// </summary>
-public class ExportAccountUseCase : IUseCase
+public class ExportAccountUseCase : IUseCase<ExportAccountRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly IFileSystemService fileSystemService;
-
-	public string ExportFormat { get; set; }
-
-	public int? Year { get; set; }
 
 	public ExportAccountUseCase(IUnitOfWork unitOfWork, IFileSystemService fileSystemService)
 	{
@@ -25,22 +22,22 @@ public class ExportAccountUseCase : IUseCase
 		this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ExportAccountRequest request, CancellationToken cancellationToken)
 	{
-		string exportFormatSafe = ExportFormat ?? "pp";
+		string exportFormatSafe = request.ExportFormat ?? "pp";
 
 		switch (exportFormatSafe.ToLower())
 		{
 			case "pp":
-				IAsyncEnumerable<Contribution> contributions = Year != null
-					? unitOfWork.ContributionRepository.GetByYear(Year.Value)
+				IAsyncEnumerable<Contribution> contributions = request.Year != null
+					? unitOfWork.ContributionRepository.GetByYear(request.Year.Value)
 					: unitOfWork.ContributionRepository.GetAll();
 
 				await ExportToCsv(contributions);
 				break;
 
 			default:
-				Console.WriteLine($"Export format '{ExportFormat}' is not supported.");
+				Console.WriteLine($"Export format '{request.ExportFormat}' is not supported.");
 				break;
 		}
 	}

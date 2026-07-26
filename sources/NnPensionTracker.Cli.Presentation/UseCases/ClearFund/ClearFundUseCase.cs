@@ -1,9 +1,10 @@
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
 
-public class ClearFundUseCase : IUseCase
+public class ClearFundUseCase : IUseCase<ClearFundRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
 
@@ -12,7 +13,7 @@ public class ClearFundUseCase : IUseCase
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ClearFundRequest request, CancellationToken cancellationToken)
 	{
 		unitOfWork.FundNavRepository.Clear();
 		await unitOfWork.SaveChangesAsync();

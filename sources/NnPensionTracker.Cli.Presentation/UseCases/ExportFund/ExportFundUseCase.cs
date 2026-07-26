@@ -4,6 +4,7 @@ using DustInTheWind.ConsoleTools;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportFund;
 
@@ -13,15 +14,11 @@ namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportFund;
 ///     - "Date": date
 ///     - "Quote": number
 /// </summary>
-public class ExportFundUseCase : IUseCase
+public class ExportFundUseCase : IUseCase<ExportFundRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly IFileSystemService fileSystemService;
 	private int count;
-
-	public string FilePath { get; set; }
-
-	public int? Year { get; set; }
 
 	public ExportFundUseCase(IUnitOfWork unitOfWork, IFileSystemService fileSystemService)
 	{
@@ -29,28 +26,28 @@ public class ExportFundUseCase : IUseCase
 		this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ExportFundRequest request, CancellationToken cancellationToken)
 	{
-		if (FilePath == null)
-			throw new ArgumentNullException(nameof(FilePath));
+		if (request.FilePath == null)
+			throw new ArgumentNullException(nameof(request.FilePath));
 
-		IAsyncEnumerable<FundNav> fundNavs = RetrieveFundNavsFromStorage();
-		await ExportFundNavsToCsv(fundNavs);
+		IAsyncEnumerable<FundNav> fundNavs = RetrieveFundNavsFromStorage(request.Year);
+		await ExportFundNavsToCsv(fundNavs, request.FilePath);
 
 		Console.WriteLine();
-		CustomConsole.WriteLineSuccess($"{count} fund NAV values were exported to: '{FilePath}'");
+		CustomConsole.WriteLineSuccess($"{count} fund NAV values were exported to: '{request.FilePath}'");
 	}
 
-	private IAsyncEnumerable<FundNav> RetrieveFundNavsFromStorage()
+	private IAsyncEnumerable<FundNav> RetrieveFundNavsFromStorage(int? year)
 	{
-		return Year != null
-			? unitOfWork.FundNavRepository.GetByYear(Year.Value)
+		return year != null
+			? unitOfWork.FundNavRepository.GetByYear(year.Value)
 			: unitOfWork.FundNavRepository.GetAll();
 	}
 
-	private async Task ExportFundNavsToCsv(IAsyncEnumerable<FundNav> fundNavs)
+	private async Task ExportFundNavsToCsv(IAsyncEnumerable<FundNav> fundNavs, string filePath)
 	{
-		await using StreamWriter writer = fileSystemService.OpenStreamWriter(FilePath);
+		await using StreamWriter writer = fileSystemService.OpenStreamWriter(filePath);
 		await using CsvWriter csv = new(writer, CultureInfo.InvariantCulture);
 
 		csv.Context.RegisterClassMap<FundNavMap>();

@@ -1,8 +1,9 @@
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
 
-public class ClearAccountUseCase : IUseCase
+public class ClearAccountUseCase : IUseCase<ClearAccountRequest>
 {
     private readonly IUnitOfWork unitOfWork;
 
@@ -11,7 +12,7 @@ public class ClearAccountUseCase : IUseCase
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task Execute()
+    public async Task Execute(ClearAccountRequest request, CancellationToken cancellationToken)
     {
         unitOfWork.ContributionRepository.Clear();
         await unitOfWork.SaveChangesAsync();

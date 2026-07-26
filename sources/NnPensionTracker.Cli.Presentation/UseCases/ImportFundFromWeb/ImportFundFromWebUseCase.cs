@@ -4,26 +4,19 @@ using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.ApiAccess;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromWeb;
 
 /// <summary>
 /// Imports fund values from the NN API.
 /// </summary>
-public class ImportFundFromWebUseCase : IUseCase
+public class ImportFundFromWebUseCase : IUseCase<ImportFundFromWebRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
 	private readonly INnApiClient nnApiClient;
 
 	private static readonly DateOnly UnixEpoch = new(1970, 1, 1);
-
-	public DateOnly? FromDate { get; set; }
-
-	public DateOnly? ToDate { get; set; }
-
-	public int? Year { get; set; }
-
-	public bool VerboseLogging { get; set; }
 
 	public ImportFundFromWebUseCase(IUnitOfWork unitOfWork, INnApiClient nnApiClient)
 	{
@@ -31,36 +24,36 @@ public class ImportFundFromWebUseCase : IUseCase
 		this.nnApiClient = nnApiClient ?? throw new ArgumentNullException(nameof(nnApiClient));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ImportFundFromWebRequest request, CancellationToken cancellationToken)
 	{
-		ValidateDateInterval();
+		ValidateDateInterval(request);
 
-		GraphData graphData = await ReadFromNnApi();
+		GraphData graphData = await ReadFromNnApi(request);
 
-		ImportDiagnostics importDiagnostics = await AddToStorage(graphData);
+		ImportDiagnostics importDiagnostics = await AddToStorage(graphData, request.VerboseLogging);
 		DisplayImportDiagnostics(importDiagnostics);
 
 		await unitOfWork.SaveChangesAsync();
 	}
 
-	private void ValidateDateInterval()
+	private static void ValidateDateInterval(ImportFundFromWebRequest request)
 	{
-		if (Year == null && FromDate == null && ToDate == null)
+		if (request.Year == null && request.FromDate == null && request.ToDate == null)
 			throw new Exception("A date interval must be specified. Either a 'year' or both 'from' and 'to' dates.");
 
-		if (Year != null && (FromDate != null || ToDate != null))
+		if (request.Year != null && (request.FromDate != null || request.ToDate != null))
 			throw new Exception("Please specify either 'year' or the 'from'/'to' interval, not both.");
 	}
 
-	private async Task<GraphData> ReadFromNnApi()
+	private async Task<GraphData> ReadFromNnApi(ImportFundFromWebRequest request)
 	{
-		DateOnly fromDate = Year != null
-			? new DateOnly(Year.Value, 1, 1)
-			: FromDate ?? UnixEpoch;
+		DateOnly fromDate = request.Year != null
+			? new DateOnly(request.Year.Value, 1, 1)
+			: request.FromDate ?? UnixEpoch;
 
-		DateOnly toDate = Year != null
-			? new DateOnly(Year.Value, 12, 31)
-			: ToDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
+		DateOnly toDate = request.Year != null
+			? new DateOnly(request.Year.Value, 12, 31)
+			: request.ToDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
 		int numberOfPoints = toDate.DayNumber - fromDate.DayNumber + 1;
 
@@ -70,7 +63,7 @@ public class ImportFundFromWebUseCase : IUseCase
 		return await nnApiClient.GetGraph(fromDate, toDate, numberOfPoints);
 	}
 
-	private async Task<ImportDiagnostics> AddToStorage(GraphData graphData)
+	private async Task<ImportDiagnostics> AddToStorage(GraphData graphData, bool verboseLogging)
 	{
 		ImportDiagnostics importDiagnostics = new();
 
@@ -82,7 +75,7 @@ public class ImportFundFromWebUseCase : IUseCase
 
 				if (existingFundNav == null)
 				{
-					if (VerboseLogging)
+					if (verboseLogging)
 						CustomConsole.WriteLine($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Adding fund NAV value.");
 
 					unitOfWork.FundNavRepository.Add(new FundNav
@@ -94,14 +87,14 @@ public class ImportFundFromWebUseCase : IUseCase
 				}
 				else if (existingFundNav.Value == nnGraphPoint.Value)
 				{
-					if (VerboseLogging)
+					if (verboseLogging)
 						CustomConsole.WriteLineWarning($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Duplicate fund NAV value. Skipping.");
 
 					importDiagnostics.SkipCount++;
 				}
 				else
 				{
-					if (VerboseLogging)
+					if (verboseLogging)
 						CustomConsole.WriteLineWarning($"[{nnGraphPoint.Date} - {nnGraphPoint.Value}] Fund NAV value already exists: [{existingFundNav.Date} - {existingFundNav.Value}]");
 
 					existingFundNav.Value = nnGraphPoint.Value;

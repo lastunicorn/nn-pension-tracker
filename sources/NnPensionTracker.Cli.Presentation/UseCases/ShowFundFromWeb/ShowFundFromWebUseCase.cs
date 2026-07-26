@@ -2,58 +2,53 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.ApiAccess;
 using DustInTheWind.NnPensionTracker.Domain;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFundFromWeb;
 
-public class ShowFundFromWebUseCase : IUseCase
+public class ShowFundFromWebUseCase : IUseCase<ShowFundFromWebRequest>
 {
 	private readonly INnApiClient nnApiClient;
 
 	private static readonly DateOnly UnixEpoch = new(1970, 1, 1);
-
-	public DateOnly? FromDate { get; set; }
-
-	public DateOnly? ToDate { get; set; }
-
-	public int? Year { get; set; }
 
 	public ShowFundFromWebUseCase(INnApiClient nnApiClient)
 	{
 		this.nnApiClient = nnApiClient ?? throw new ArgumentNullException(nameof(nnApiClient));
 	}
 
-	public Task Execute()
+	public Task Execute(ShowFundFromWebRequest request, CancellationToken cancellationToken)
 	{
-		ValidateDateInterval();
+		ValidateDateInterval(request);
 
-		return DisplayFundNavsFromNnApi();
+		return DisplayFundNavsFromNnApi(request);
 	}
 
-	private void ValidateDateInterval()
+	private static void ValidateDateInterval(ShowFundFromWebRequest request)
 	{
-		if (Year != null && (FromDate != null || ToDate != null))
+		if (request.Year != null && (request.FromDate != null || request.ToDate != null))
 			throw new Exception("Please specify either 'year' or the 'from'/'to' interval, not both.");
 
-		if (FromDate != null && ToDate != null && FromDate > ToDate)
+		if (request.FromDate != null && request.ToDate != null && request.FromDate > request.ToDate)
 			throw new Exception("The 'from' date cannot be greater than the 'to' date.");
 	}
 
-	private async Task DisplayFundNavsFromNnApi()
+	private async Task DisplayFundNavsFromNnApi(ShowFundFromWebRequest request)
 	{
 		DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
 
 		DateOnly fromDate;
 		DateOnly toDate;
 
-		if (Year != null)
+		if (request.Year != null)
 		{
-			fromDate = new DateOnly(Year.Value, 1, 1);
-			toDate = new DateOnly(Year.Value, 12, 31);
+			fromDate = new DateOnly(request.Year.Value, 1, 1);
+			toDate = new DateOnly(request.Year.Value, 12, 31);
 		}
-		else if (FromDate != null || ToDate != null)
+		else if (request.FromDate != null || request.ToDate != null)
 		{
-			fromDate = FromDate ?? UnixEpoch;
-			toDate = ToDate ?? today;
+			fromDate = request.FromDate ?? UnixEpoch;
+			toDate = request.ToDate ?? today;
 		}
 		else
 		{

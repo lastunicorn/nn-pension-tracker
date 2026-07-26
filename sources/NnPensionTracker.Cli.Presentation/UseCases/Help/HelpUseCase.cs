@@ -1,10 +1,11 @@
 using DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.Help;
 
-public class HelpUseCase : IUseCase
+public class HelpUseCase : IUseCase<HelpRequest>
 {
-	public Task Execute()
+	public Task Execute(HelpRequest request, CancellationToken cancellationToken)
 	{
 		Display([
 			new HelpItem

@@ -1,17 +1,8 @@
 using DustInTheWind.NN.Toolkit.ApiAccess;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportFund;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.Help;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromFile;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromWeb;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowAccount;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
-using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFundFromWeb;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+using DustInTheWind.RequestR.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -46,16 +37,9 @@ internal static class Setup
         services.AddTransient<IFileSystemService, FileSystemService>();
         services.AddTransient<INnApiClient, NnApiClient>();
 
-        services.AddTransient<ImportAccountUseCase>();
-        services.AddTransient<ExportAccountUseCase>();
-        services.AddTransient<ClearAccountUseCase>();
-        services.AddTransient<ShowAccountUseCase>();
-        services.AddTransient<ImportFundFromFileUseCase>();
-        services.AddTransient<ImportFundFromWebUseCase>();
-        services.AddTransient<ExportFundUseCase>();
-        services.AddTransient<ClearFundUseCase>();
-        services.AddTransient<ShowFundUseCase>();
-        services.AddTransient<ShowFundFromWebUseCase>();
-        services.AddTransient<HelpUseCase>();
+        services.AddUseCaseEngine(options =>
+        {
+            options.AddFromAssemblyContaining<ImportAccountUseCase>();
+        });
     }
 }

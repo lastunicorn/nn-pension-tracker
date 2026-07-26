@@ -1,9 +1,8 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Reflection;
 using DustInTheWind.ConsoleTools;
 using DustInTheWind.ConsoleTools.Arguments;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
-using DustInTheWind.NnPensionTracker.Cli.Presentation;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearAccount;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ClearFund;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ExportAccount;
@@ -15,12 +14,13 @@ using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromWeb
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowAccount;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFundFromWeb;
+using DustInTheWind.RequestR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DustInTheWind.NnPensionTracker.Cli;
 
-// account import [<pdf-file-path>] - Imports 
+// account import [<pdf-file-path>] - Imports
 // account import [--file <pdf-file-path>]
 // account clear
 // account export [--format pp]
@@ -47,12 +47,13 @@ internal static class Program
 			IConfiguration configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 			ApplyCultureFromAppSettings(configuration);
 
+			RequestBus requestBus = serviceProvider.GetRequiredService<RequestBus>();
 			Arguments arguments = new(args);
 
-			IUseCase useCase = CreateUseCase(arguments, serviceProvider)
-			                   ?? serviceProvider.GetRequiredService<HelpUseCase>();
+			Func<Task> action = CreateAction(arguments, requestBus)
+			                     ?? (() => requestBus.SendAsync(new HelpRequest()));
 
-			await useCase.Execute();
+			await action();
 		}
 		catch (Exception ex)
 		{
@@ -92,7 +93,7 @@ internal static class Program
 		return services.BuildServiceProvider();
 	}
 
-	private static IUseCase CreateUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> CreateAction(Arguments arguments, RequestBus requestBus)
 	{
 		if (arguments.Count == 0)
 			return null;
@@ -101,20 +102,19 @@ internal static class Program
 		if (noun?.Type != ArgumentType.Ordinal)
 			return null;
 
-		return TryCreateImportAccountUseCase(arguments, serviceProvider)
-		       ?? TryCreateExportAccountUseCase(arguments, serviceProvider)
-		       ?? TryCreateClearAccountUseCase(arguments, serviceProvider)
-		       ?? TryCreateShowAccountUseCase(arguments, serviceProvider)
-		       ?? TryCreateImportFundFromFileUseCase(arguments, serviceProvider)
-		       ?? TryCreateImportFundFromWebUseCase(arguments, serviceProvider)
-		       ?? TryCreateShowFundFromWebUseCase(arguments, serviceProvider)
-		       ?? TryCreateExportFundUseCase(arguments, serviceProvider)
-		       ?? TryCreateClearFundUseCase(arguments, serviceProvider)
-		       ?? TryCreateShowFundUseCase(arguments, serviceProvider)
-		       ?? TryCreateHelpUseCase(serviceProvider);
+		return TryCreateImportAccountAction(arguments, requestBus)
+		       ?? TryCreateExportAccountAction(arguments, requestBus)
+		       ?? TryCreateClearAccountAction(arguments, requestBus)
+		       ?? TryCreateShowAccountAction(arguments, requestBus)
+		       ?? TryCreateImportFundFromFileAction(arguments, requestBus)
+		       ?? TryCreateImportFundFromWebAction(arguments, requestBus)
+		       ?? TryCreateShowFundFromWebAction(arguments, requestBus)
+		       ?? TryCreateExportFundAction(arguments, requestBus)
+		       ?? TryCreateClearFundAction(arguments, requestBus)
+		       ?? TryCreateShowFundAction(arguments, requestBus);
 	}
 
-	private static IUseCase TryCreateImportAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateImportAccountAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -128,12 +128,14 @@ internal static class Program
 
 		Argument fileArgument = arguments["file"] ?? arguments[2];
 
-		ImportAccountUseCase useCase = serviceProvider.GetRequiredService<ImportAccountUseCase>();
-		useCase.FilePath = fileArgument?.Value;
-		return useCase;
+		ImportAccountRequest request = new()
+		{
+			FilePath = fileArgument?.Value
+		};
+		return () => requestBus.SendAsync(request);
 	}
 
-	private static IUseCase TryCreateExportAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateExportAccountAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -151,13 +153,15 @@ internal static class Program
 			? int.Parse(yearArgument.Value!)
 			: null;
 
-		ExportAccountUseCase useCase = serviceProvider.GetRequiredService<ExportAccountUseCase>();
-		useCase.ExportFormat = formatArgument?.Value;
-		useCase.Year = year;
-		return useCase;
+		ExportAccountRequest request = new()
+		{
+			ExportFormat = formatArgument?.Value,
+			Year = year
+		};
+		return () => requestBus.SendAsync(request);
 	}
 
-	private static IUseCase TryCreateClearAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateClearAccountAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -169,10 +173,10 @@ internal static class Program
 		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "clear")
 			return null;
 
-		return serviceProvider.GetRequiredService<ClearAccountUseCase>();
+		return () => requestBus.SendAsync(new ClearAccountRequest());
 	}
 
-	private static IUseCase TryCreateShowAccountUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateShowAccountAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -225,14 +229,16 @@ internal static class Program
 			toMonth = null;
 		}
 
-		ShowAccountUseCase useCase = serviceProvider.GetRequiredService<ShowAccountUseCase>();
-		useCase.Year = year;
-		useCase.FromMonth = fromMonth;
-		useCase.ToMonth = toMonth;
-		return useCase;
+		ShowAccountRequest request = new()
+		{
+			Year = year,
+			FromMonth = fromMonth,
+			ToMonth = toMonth
+		};
+		return () => requestBus.SendAsync(request);
 	}
 
-	private static IUseCase TryCreateImportFundFromFileUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateImportFundFromFileAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -259,15 +265,17 @@ internal static class Program
 		{
 			Argument fileArgument = arguments["file"];
 
-			ImportFundFromFileUseCase useCase = serviceProvider.GetRequiredService<ImportFundFromFileUseCase>();
-			useCase.FilePath = fileArgument?.Value;
-			return useCase;
+			ImportFundFromFileRequest request = new()
+			{
+				FilePath = fileArgument?.Value
+			};
+			return () => requestBus.SendAsync(request);
 		}
 
 		return null;
 	}
 
-	private static IUseCase TryCreateImportFundFromWebUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateImportFundFromWebAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -311,18 +319,20 @@ internal static class Program
 
 			bool verboseLogging = verboseArgument != null && (verboseArgument.Value == null || verboseArgument.Value == "true");
 
-			ImportFundFromWebUseCase useCase = serviceProvider.GetRequiredService<ImportFundFromWebUseCase>();
-			useCase.Year = year;
-			useCase.FromDate = fromDate;
-			useCase.ToDate = toDate;
-			useCase.VerboseLogging = verboseLogging;
-			return useCase;
+			ImportFundFromWebRequest request = new()
+			{
+				Year = year,
+				FromDate = fromDate,
+				ToDate = toDate,
+				VerboseLogging = verboseLogging
+			};
+			return () => requestBus.SendAsync(request);
 		}
 
 		return null;
 	}
 
-	private static IUseCase TryCreateExportFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateExportFundAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -344,13 +354,15 @@ internal static class Program
 			? int.Parse(yearArgument.Value!)
 			: null;
 
-		ExportFundUseCase useCase = serviceProvider.GetRequiredService<ExportFundUseCase>();
-		useCase.FilePath = fileArgument.Value;
-		useCase.Year = year;
-		return useCase;
+		ExportFundRequest request = new()
+		{
+			FilePath = fileArgument.Value,
+			Year = year
+		};
+		return () => requestBus.SendAsync(request);
 	}
 
-	private static IUseCase TryCreateClearFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateClearFundAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -362,10 +374,10 @@ internal static class Program
 		if (verb == null || verb.Type != ArgumentType.Ordinal || verb.Value != "clear")
 			return null;
 
-		return serviceProvider.GetRequiredService<ClearFundUseCase>();
+		return () => requestBus.SendAsync(new ClearFundRequest());
 	}
 
-	private static IUseCase TryCreateShowFundUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateShowFundAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -392,14 +404,16 @@ internal static class Program
 			? DateOnly.Parse(toArgument.Value!)
 			: null;
 
-		ShowFundUseCase useCase = serviceProvider.GetRequiredService<ShowFundUseCase>();
-		useCase.Year = year;
-		useCase.FromDate = fromDate;
-		useCase.ToDate = toDate;
-		return useCase;
+		ShowFundRequest request = new()
+		{
+			Year = year,
+			FromDate = fromDate,
+			ToDate = toDate
+		};
+		return () => requestBus.SendAsync(request);
 	}
 
-	private static IUseCase TryCreateShowFundFromWebUseCase(Arguments arguments, IServiceProvider serviceProvider)
+	private static Func<Task> TryCreateShowFundFromWebAction(Arguments arguments, RequestBus requestBus)
 	{
 		Argument noun = arguments[0];
 
@@ -431,15 +445,12 @@ internal static class Program
 			? DateOnly.Parse(toArgument.Value!)
 			: null;
 
-		ShowFundFromWebUseCase useCase = serviceProvider.GetRequiredService<ShowFundFromWebUseCase>();
-		useCase.Year = year;
-		useCase.FromDate = fromDate;
-		useCase.ToDate = toDate;
-		return useCase;
-	}
-
-	private static IUseCase TryCreateHelpUseCase(IServiceProvider serviceProvider)
-	{
-		return serviceProvider.GetRequiredService<HelpUseCase>();
+		ShowFundFromWebRequest request = new()
+		{
+			Year = year,
+			FromDate = fromDate,
+			ToDate = toDate
+		};
+		return () => requestBus.SendAsync(request);
 	}
 }

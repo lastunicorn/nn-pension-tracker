@@ -2,34 +2,29 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowFund;
 
-public class ShowFundUseCase : IUseCase
+public class ShowFundUseCase : IUseCase<ShowFundRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
-
-	public int? Year { get; set; }
-
-	public DateOnly? FromDate { get; set; }
-
-	public DateOnly? ToDate { get; set; }
 
 	public ShowFundUseCase(IUnitOfWork unitOfWork)
 	{
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ShowFundRequest request, CancellationToken cancellationToken)
 	{
 		List<FundNav> fundRecords = [];
 
 		IAsyncEnumerable<FundNav> source;
 
-		if (FromDate.HasValue || ToDate.HasValue)
-			source = unitOfWork.FundNavRepository.GetByDateInterval(FromDate, ToDate);
-		else if (Year.HasValue)
-			source = unitOfWork.FundNavRepository.GetByYear(Year.Value);
+		if (request.FromDate.HasValue || request.ToDate.HasValue)
+			source = unitOfWork.FundNavRepository.GetByDateInterval(request.FromDate, request.ToDate);
+		else if (request.Year.HasValue)
+			source = unitOfWork.FundNavRepository.GetByYear(request.Year.Value);
 		else
 			source = unitOfWork.FundNavRepository.GetAll();
 

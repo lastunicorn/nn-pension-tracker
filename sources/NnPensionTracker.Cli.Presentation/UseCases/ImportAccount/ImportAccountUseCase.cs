@@ -5,6 +5,7 @@ using DustInTheWind.NN.Toolkit.MandatoryPrivatePension.Pdf;
 using DustInTheWind.NnPensionTracker.Cli.Presentation.ConsoleUtils;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount;
 
@@ -12,23 +13,21 @@ namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportAccount
 /// Imports contributions from a PDF file.
 /// The PDF file must be a Mandatory Private Pension contributions document downloaded from NN Direct mobile app.
 /// </summary>
-public class ImportAccountUseCase : IUseCase
+public class ImportAccountUseCase : IUseCase<ImportAccountRequest>
 {
 	private readonly IUnitOfWork unitOfWork;
-
-	public string FilePath { get; set; }
 
 	public ImportAccountUseCase(IUnitOfWork unitOfWork)
 	{
 		this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 	}
 
-	public async Task Execute()
+	public async Task Execute(ImportAccountRequest request, CancellationToken cancellationToken)
 	{
-		if (FilePath == null)
-			throw new ArgumentNullException(nameof(FilePath));
+		if (request.FilePath == null)
+			throw new ArgumentNullException(nameof(request.FilePath));
 
-		DocumentLoadResult documentLoadResult = ParseDocument(FilePath);
+		DocumentLoadResult documentLoadResult = ParseDocument(request.FilePath);
 		DisplayParsingDiagnostics(documentLoadResult.Diagnostics);
 
 		AddColumnNamesToStorage(documentLoadResult.Document.Header);

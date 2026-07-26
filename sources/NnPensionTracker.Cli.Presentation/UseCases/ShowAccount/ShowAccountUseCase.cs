@@ -2,32 +2,27 @@ using DustInTheWind.ConsoleTools.Controls;
 using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NN.Toolkit.MandatoryPrivatePension;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ShowAccount;
 
-public class ShowAccountUseCase : IUseCase
+public class ShowAccountUseCase : IUseCase<ShowAccountRequest>
 {
     private readonly IUnitOfWork unitOfWork;
-
-    public int? Year { get; set; }
-
-    public MonthDate? FromMonth { get; set; }
-
-    public MonthDate? ToMonth { get; set; }
 
     public ShowAccountUseCase(IUnitOfWork unitOfWork)
     {
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
-    
-    public async Task Execute()
+
+    public async Task Execute(ShowAccountRequest request, CancellationToken cancellationToken)
     {
         IAsyncEnumerable<Contribution> source;
 
-        if (FromMonth.HasValue || ToMonth.HasValue)
-            source = unitOfWork.ContributionRepository.GetByMonthDateInterval(FromMonth, ToMonth);
-        else if (Year.HasValue)
-            source = unitOfWork.ContributionRepository.GetByYear(Year.Value);
+        if (request.FromMonth.HasValue || request.ToMonth.HasValue)
+            source = unitOfWork.ContributionRepository.GetByMonthDateInterval(request.FromMonth, request.ToMonth);
+        else if (request.Year.HasValue)
+            source = unitOfWork.ContributionRepository.GetByYear(request.Year.Value);
         else
             source = unitOfWork.ContributionRepository.GetAll();
 

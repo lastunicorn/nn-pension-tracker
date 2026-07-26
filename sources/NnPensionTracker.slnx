@@ -14,6 +14,9 @@
     <Project Path="NnPensionTracker.Ports.DataAccess/NnPensionTracker.Ports.DataAccess.csproj" />
     <Project Path="NnPensionTracker.Ports.FileSystemAccess/NnPensionTracker.Ports.FileSystemAccess.csproj" />
   </Folder>
+  <Project Path="NnPensionTracker.Cli.Application/NnPensionTracker.Cli.Application.csproj">
+    <BuildType Solution="Release plus Install|*" Project="Debug" />
+  </Project>
   <Project Path="NnPensionTracker.Cli.Presentation/NnPensionTracker.Cli.Presentation.csproj" />
   <Project Path="NnPensionTracker.Cli.Tests\NnPensionTracker.Cli.Tests.csproj" />
   <Project Path="NnPensionTracker.Cli\NnPensionTracker.Cli.csproj" />

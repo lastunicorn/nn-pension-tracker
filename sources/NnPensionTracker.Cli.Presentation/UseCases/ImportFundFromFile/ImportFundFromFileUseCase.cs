@@ -7,6 +7,7 @@ using DustInTheWind.ConsoleTools.Controls.Tables;
 using DustInTheWind.NnPensionTracker.Domain;
 using DustInTheWind.NnPensionTracker.Ports.DataAccess;
 using DustInTheWind.NnPensionTracker.Ports.FileSystemAccess;
+using DustInTheWind.RequestR;
 
 namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFromFile;
 
@@ -16,10 +17,8 @@ namespace DustInTheWind.NnPensionTracker.Cli.Presentation.UseCases.ImportFundFro
 ///     - "Date": date
 ///     - "Quote": number
 /// </summary>
-public class ImportFundFromFileUseCase : IUseCase
+public class ImportFundFromFileUseCase : IUseCase<ImportFundFromFileRequest>
 {
-    public string FilePath { get; set; }
-
     private readonly IUnitOfWork unitOfWork;
     private readonly IFileSystemService fileSystemService;
 
@@ -29,9 +28,9 @@ public class ImportFundFromFileUseCase : IUseCase
         this.fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
-    public async Task Execute()
+    public async Task Execute(ImportFundFromFileRequest request, CancellationToken cancellationToken)
     {
-        string filePathSafe = FilePath ?? Environment.CurrentDirectory;
+        string filePathSafe = request.FilePath ?? Environment.CurrentDirectory;
 
         IEnumerable<string> filePaths = fileSystemService.IsDirectory(filePathSafe)
             ? fileSystemService.GetFiles(filePathSafe, "*.csv")
